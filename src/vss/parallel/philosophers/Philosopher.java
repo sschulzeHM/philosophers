@@ -35,10 +35,12 @@ public class Philosopher extends Thread
         while (!Thread.interrupted())
         {
             think();
-            int seat = table.getAvailableSeat();
-            table.takeSeat(seat);
-            eat(id, seat);
-            table.leaveSeat(seat);
+            Usher usher = table.getUsher();
+            Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " is served by usher " + usher.getId() + ".");
+            Seat seat = usher.getAvailableSeat();
+            usher.takeSeat(seat);
+            eat(id, seat.getId());
+            usher.leaveSeat(seat);
         }
     }
 

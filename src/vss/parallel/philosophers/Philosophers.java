@@ -8,11 +8,11 @@ import java.util.logging.Logger;
 
 /**
  * Created by stefanschulze on 12.10.15.
- *
  */
 public class Philosophers
 {
-    private static final int AVAILABLE_SEATS = 3;
+    private static final int AVAILABLE_SEATS = 11;
+    private static final int AVAILABLE_USHERS = 3;
     private static final int NUMBER_OF_PHILOSOPHERS = 10;
 
     public static void main(String[] args)
@@ -33,13 +33,14 @@ public class Philosophers
         Logger.getGlobal().log(Level.INFO, "::Max Eat Sleep: " + (Philosopher.SLEEPTIME / 1000) % 60 + "s");
         Logger.getGlobal().log(Level.INFO, "::Max Meals: " + Philosopher.MAX_MEALS_BEFORE_SLEEP);
         Logger.getGlobal().log(Level.INFO, "::Available Seats: " + AVAILABLE_SEATS);
+        Logger.getGlobal().log(Level.INFO, "::Available Ushers: " + AVAILABLE_USHERS);
         Logger.getGlobal().log(Level.INFO, "::Number Of Philosophers: " + NUMBER_OF_PHILOSOPHERS);
         Logger.getGlobal().log(Level.INFO, "");
 
-        Table table = new Table(AVAILABLE_SEATS);
+        Table table = new Table(AVAILABLE_SEATS, AVAILABLE_USHERS);
         for (int i = 0; i < NUMBER_OF_PHILOSOPHERS; i++)
         {
             new Philosopher(table, i);
         }
-  }
+    }
 }
