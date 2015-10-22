@@ -25,6 +25,8 @@ public final class LogFormatter extends Formatter
         Date date = new Date(record.getMillis());
         sb.append(dateFormat.format(date))
                 .append(" ")
+                .append("[" + record.getThreadID() + "]")
+                .append(" ")
                 .append(record.getLevel().getLocalizedName())
                 .append(": ")
                 .append(formatMessage(record))
