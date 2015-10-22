@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  */
 public class Philosophers
 {
-    private static final int AVAILABLE_SEATS = 1;
+    private static final int AVAILABLE_SEATS = 3;
     private static final int NUMBER_OF_PHILOSOPHERS = 10;
 
     public static void main(String[] args)

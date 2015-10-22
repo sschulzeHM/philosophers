@@ -18,8 +18,8 @@ public class Philosopher extends Thread
     public static final double SLEEPTIME = 5000;
     public static final int MAX_MEALS_BEFORE_SLEEP = 3;
 
-    private Table table;
-    private int id;
+    private final Table table;
+    private final int id;
     private int mealcounter;
 
     public Philosopher(Table table, int id)
@@ -32,31 +32,14 @@ public class Philosopher extends Thread
 
     public void run()
     {
-        while (true)
+        while (!Thread.interrupted())
         {
             think();
-
-            synchronized (table)
-            {
-                int seat = table.getAvailableSeat();
-                while (seat == Table.FORK_UNAVAILABLE)
-                {
-                    try
-                    {
-                        table.wait();
-                    }
-                    catch (InterruptedException e)
-                    {
-                    }
-                    seat = table.getAvailableSeat();
-                }
-
-                table.takeSeat(seat);
-                eat(id, seat);
-                table.leaveSeat(seat);
-            }
+            int seat = table.getAvailableSeat();
+            table.takeSeat(seat);
+            eat(id, seat);
+            table.leaveSeat(seat);
         }
-
     }
 
     private void eat(int id, int seat)
@@ -68,6 +51,7 @@ public class Philosopher extends Thread
         }
         catch (InterruptedException e)
         {
+            Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " interrupted while eating at seat " + seat + ".");
         }
         Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " stops eating at seat " + seat + ".");
 
@@ -81,6 +65,7 @@ public class Philosopher extends Thread
             }
             catch (InterruptedException e)
             {
+                Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " interrupted while sleeping.");
             }
             Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " awakes.");
             mealcounter = 0;
@@ -96,6 +81,7 @@ public class Philosopher extends Thread
         }
         catch (InterruptedException e)
         {
+            Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " interrupted while thinking.");
         }
     }
 }
