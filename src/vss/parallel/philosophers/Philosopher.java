@@ -38,9 +38,18 @@ public class Philosopher extends Thread
             Usher usher = table.getUsher();
             Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " is served by usher " + usher.getId() + ".");
             Seat seat = usher.getAvailableSeat();
-            usher.takeSeat(seat);
-            eat(id, seat.getId());
-            usher.leaveSeat(seat);
+            Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " receives seat " + seat.getId() + ".");
+            boolean success = seat.take();
+            if (success)
+            {
+                eat(id, seat.getId());
+            }
+            else
+            {
+                Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " could not eat at seat " + seat.getId() + ".");
+            }
+
+            seat.leave();
         }
     }
 

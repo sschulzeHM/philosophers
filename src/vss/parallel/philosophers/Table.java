@@ -7,24 +7,13 @@ import java.util.Arrays;
  */
 public class Table
 {
-    private boolean[] forkUsed;
     private Usher[] ushers;
     private Seat[] seats;
 
     public Table(int seats, int ushers)
     {
-        initForks(seats);
         initSeats(seats);
         initUshers(seats, ushers);
-    }
-
-    private void initForks(int seats)
-    {
-        forkUsed = new boolean[seats];
-        for (int i = 0; i < forkUsed.length; i++)
-        {
-            forkUsed[i] = false;
-        }
     }
 
     private void initSeats(int seats)
@@ -33,7 +22,12 @@ public class Table
         // create seats
         for (int i = 0; i < this.seats.length; i++)
         {
-            this.seats[i] = new Seat(i, left(i), right(i));
+            this.seats[i] = new Seat(i);
+        }
+        // init created seats
+        for (int i = 0; i < this.seats.length; i++)
+        {
+            this.seats[i].initialize(getLeftSeat(i), new Fork(true, getRightForkID(i)));
         }
     }
 
@@ -51,7 +45,7 @@ public class Table
             // last usher gets remaining seats
             lastSeat = (lastSeat < this.seats.length && i == this.ushers.length - 1) ? this.seats.length - 1 : lastSeat;
             Seat[] managedSeats = Arrays.copyOfRange(this.seats, firstSeat, lastSeat);
-            this.ushers[i] = new Usher(i, managedSeats, forkUsed);
+            this.ushers[i] = new Usher(i, managedSeats);
             firstSeat = lastSeat + 1;
             lastSeat++;
         }
@@ -68,25 +62,18 @@ public class Table
     }
 
 
-    private int left(int i)
+    private Seat getLeftSeat(int i)
     {
         if (i == 0)
         {
-            return forkUsed.length - 1;
+            return seats[seats.length - 1];
         }
 
-        return i;
+        return seats[i - 1];
     }
 
-    private int right(int i)
+    private int getRightForkID(int i)
     {
-        if (i + 1 < forkUsed.length)
-        {
-            return i + 1;
-        }
-        else
-        {
-            return 0;
-        }
+        return i;
     }
 }
