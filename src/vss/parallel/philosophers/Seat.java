@@ -13,16 +13,19 @@ public class Seat
     private Seat leftNeighbor;
     private Fork rightFork;
     private boolean available;
+    private boolean successOwnFork;
+    private boolean successOtherFork;
 
     public Seat(int id)
     {
         this.id = id;
         available = false;
+        successOwnFork = false;
+        successOtherFork = false;
     }
 
     public void initialize(Seat leftNeighbor, Fork rightFork)
     {
-
         this.leftNeighbor = leftNeighbor;
         this.rightFork = rightFork;
         available = true;
@@ -40,40 +43,21 @@ public class Seat
         this.available = available;
     }
 
-    public synchronized boolean tryTakeFork()
+    public boolean takeRightFork()
     {
-        if (!available)
+        synchronized (rightFork)
         {
-            return false;
-        }
+            if (!rightFork.isAvailable())
+            {
+                return false;
+            }
 
-        rightFork.setUnavailable(1000);
-        return true;
+            rightFork.setUnavailable();
+            return true;
+        }
     }
 
-    public synchronized boolean tryReleaseFork()
-    {
-        if (!available)
-        {
-            return false;
-        }
-
-        rightFork.setAvailable();
-        return true;
-    }
-
-    private boolean takeRightFork()
-    {
-        if (!rightFork.isAvailable())
-        {
-            return false;
-        }
-
-        rightFork.setUnavailable(1000);
-        return true;
-    }
-
-    private void releaseRightFork()
+    public void releaseRightFork()
     {
         rightFork.setAvailable();
     }
@@ -83,46 +67,53 @@ public class Seat
         return id;
     }
 
-    public boolean take()
+    public boolean take(boolean releaseAnyway)
     {
-        boolean successOwnFork = false;
-        boolean successOtherFork = false;
-        int requestCount = 0;
-        while (!successOwnFork || !successOtherFork)
+        if (!successOwnFork)
         {
-            if (!successOwnFork)
+            successOwnFork = takeRightFork();
+            if (successOwnFork)
             {
-                successOwnFork = takeRightFork();
-                if (successOwnFork)
-                {
-                    Logger.getGlobal().log(Level.INFO, "Seat " + getId() + " takes fork " + rightFork.getId() + ".");
-                }
-            }
-            if (!successOtherFork)
-            {
-                successOtherFork = leftNeighbor.tryTakeFork();
-                if (successOtherFork)
-                {
-                    Logger.getGlobal().log(Level.INFO, "Seat " + getId() + " takes fork from neighbor " + leftNeighbor.getId() + ".");
-                }
-            }
-            if (!successOwnFork || !successOtherFork)
-            {
-                requestCount++;
-                if (requestCount > REQUEST_MAX_COUNT)
-                {
-                    Logger.getGlobal().log(Level.WARNING, "Seat " + getId() + " could not take both forks.");
-                    return false;
-                }
+                Logger.getGlobal().log(Level.INFO, "Seat " + getId() + " takes fork " + rightFork.getId() + ".");
             }
         }
-        return true;
+        if (!successOtherFork)
+        {
+            successOtherFork = leftNeighbor.takeRightFork();
+            if (successOtherFork)
+            {
+                Logger.getGlobal().log(Level.INFO, "Seat " + getId() + " takes fork from neighbor " + leftNeighbor.getId() + ".");
+            }
+        }
+
+        if ((!successOwnFork || !successOtherFork) && releaseAnyway)
+        {
+            if (successOwnFork)
+            {
+                releaseRightFork();
+                successOwnFork = false;
+            }
+            if (successOtherFork)
+            {
+                leftNeighbor.releaseRightFork();
+                successOtherFork = false;
+            }
+        }
+
+        return successOtherFork && successOwnFork;
+    }
+
+    public void releaseForks()
+    {
+        releaseRightFork();
+        leftNeighbor.releaseRightFork();
+
+        successOwnFork = false;
+        successOtherFork = false;
     }
 
     public void leave()
     {
         available = true;
-        leftNeighbor.tryReleaseFork();
-        releaseRightFork();
     }
 }

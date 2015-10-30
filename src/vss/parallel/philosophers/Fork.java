@@ -19,32 +19,14 @@ public class Fork
         return available;
     }
 
-    public synchronized void setUnavailable(int timeout)
+    public synchronized void setUnavailable()
     {
-        int maxTries = 3;
-        int tries = 0;
-        while (!isAvailable() && tries <= maxTries)
-        {
-            try
-            {
-                wait(timeout);
-            }
-            catch (InterruptedException e)
-            {
-            }
-        }
-        if (tries <= maxTries)
-        {
-            return;
-        }
-
         this.available = false;
     }
 
     public synchronized void setAvailable()
     {
         this.available = true;
-        notifyAll();
     }
 
     public int getId()

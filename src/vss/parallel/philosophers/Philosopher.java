@@ -17,6 +17,7 @@ public class Philosopher extends Thread
     public static final double THINKTIME = 2500;
     public static final double SLEEPTIME = 5000;
     public static final int MAX_MEALS_BEFORE_SLEEP = 3;
+    private static final int MAX_TRIES = 3;
 
     private final Table table;
     private final int id;
@@ -39,17 +40,42 @@ public class Philosopher extends Thread
             Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " is served by usher " + usher.getId() + ".");
             Seat seat = usher.getAvailableSeat();
             Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " receives seat " + seat.getId() + ".");
-            boolean success = seat.take();
+
+            boolean success = seat.take(false);
+            int requestCount = 0;
+            while (!success && requestCount <= MAX_TRIES)
+            {
+                try
+                {
+                    sleep(1000);
+                }
+                catch (InterruptedException e)
+                {
+                }
+
+                if (requestCount >= MAX_TRIES)
+                {
+                    success = seat.take(true);
+                }
+                else
+                {
+                    success = seat.take(false);
+                }
+
+                requestCount++;
+            }
+
             if (success)
             {
                 eat(id, seat.getId());
-            }
-            else
-            {
-                Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " could not eat at seat " + seat.getId() + ".");
+                seat.releaseForks();
             }
 
             seat.leave();
+            if (requestCount >= MAX_TRIES)
+            {
+                Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " could not eat at seat " + seat.getId() + ".");
+            }
         }
     }
 
