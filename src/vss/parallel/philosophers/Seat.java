@@ -43,6 +43,7 @@ public class Seat
         this.available = available;
     }
 
+    //syncronized because 2 seats can call this method
     public boolean takeRightFork()
     {
         synchronized (rightFork)
@@ -115,5 +116,17 @@ public class Seat
     public void leave()
     {
         available = true;
+    }
+    
+    public void releaseOwnedForks(){
+    	if(successOwnFork){
+    		releaseRightFork();
+    		successOwnFork = false;
+    	}
+    	
+    	if(successOtherFork){
+    		leftNeighbor.releaseRightFork();
+    		successOtherFork = false;
+    	}
     }
 }

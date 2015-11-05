@@ -44,7 +44,7 @@ public class Table
             lastSeat += seatsPerUsher - 1;
             // last usher gets remaining seats
             lastSeat = (lastSeat < this.seats.length && i == this.ushers.length - 1) ? this.seats.length - 1 : lastSeat;
-            Seat[] managedSeats = Arrays.copyOfRange(this.seats, firstSeat, lastSeat);
+            Seat[] managedSeats = Arrays.copyOfRange(this.seats, firstSeat, lastSeat+1); //copy lastSeat exclusive therefore + 1
             this.ushers[i] = new Usher(i, managedSeats);
             firstSeat = lastSeat + 1;
             lastSeat++;
@@ -53,11 +53,7 @@ public class Table
 
     public Usher getUsher()
     {
-        int someUsher = (int) (Math.random() * (ushers.length));
-        if (someUsher == ushers.length)
-        {
-            someUsher--;
-        }
+    	int someUsher = ((int) (Math.random() * 10)) % ushers.length;
         return ushers[someUsher];
     }
 
