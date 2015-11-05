@@ -13,11 +13,11 @@ import java.util.logging.Logger;
  */
 public class Philosopher extends Thread
 {
-	public static final double EATTIME = 1000;
-	public static final double THINKTIME = 2500;
-	public static final double SLEEPTIME = 5000;
-	private static final int MAX_TRIES = 3;
-	public static int MAX_MEALS_BEFORE_GO;
+	public static double EATTIME = 1000;
+	public static double THINKTIME = 2500;
+	public static double SLEEPTIME = 5000;
+	public static int MAX_TRIES = 3;
+	public static int MAX_MEALS_BEFORE_SLEEP = 3;
 
 	private final Table table;
 	private final int id;
@@ -138,5 +138,10 @@ public class Philosopher extends Thread
 
 	public int getMeals() {
 		return mealcounter;
+	}
+
+	protected String getOwnName()
+	{
+		return "Philosopher " + id;
 	}
 }

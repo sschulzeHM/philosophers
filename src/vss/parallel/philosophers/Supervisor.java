@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 
 public class Supervisor extends Thread {
 
-	private HashMap <Philosopher, Integer> philosophers ;
 	private final Table table;
 	private final int NUMBER_OF_PHILOSOPHERS;
-    private final int NUMBER_OF_HUNGRY_PHILOSOPHERS;
+	private final int NUMBER_OF_HUNGRY_PHILOSOPHERS;
+	private HashMap <Philosopher, Integer> philosophers ;
 
 	public Supervisor(Table table, int numOfPhil, int numOfHungPhil) {
 		this.table = table;
@@ -25,9 +25,9 @@ public class Supervisor extends Thread {
 		while(true){
 			for(Philosopher philosopher : philosophers ){
 
-				if(philosopher.getMeals() >= philosopher.getMaxMeals())
+				if (philosopher.getMeals() >= philosopher.MAX_MEALS_BEFORE_SLEEP)
 				{
-					Logger.getGlobal().log(Level.INFO, "Philosopher " + philosopher.getId() + " ate too much (" + MAX_MEALS_BEFORE_LEAVE_SEAT + " times). He has to leave the Table.");
+					Logger.getGlobal().log(Level.INFO, "Philosopher " + philosopher.getId() + " ate too much (" + philosopher.MAX_MEALS_BEFORE_SLEEP + " times). He has to leave the Table.");
 					philosopher.interrupt();
 				}
 			}
