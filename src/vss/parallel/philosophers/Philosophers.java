@@ -11,9 +11,9 @@ import java.util.logging.Logger;
  */
 public class Philosophers
 {
-    private static final int AVAILABLE_SEATS = 2;
+    private static final int AVAILABLE_SEATS = 4;
     private static final int AVAILABLE_USHERS = 2;
-    private static final int NUMBER_OF_PHILOSOPHERS = 10;
+    private static final int NUMBER_OF_PHILOSOPHERS = 5;
     private static final int NUMBER_OF_HUNGRY_PHILOSOPHERS = 3;
     
     public static void main(String[] args)
@@ -29,9 +29,6 @@ public class Philosophers
         // Log configuration
         Logger.getGlobal().log(Level.INFO, "::CONFIGURATION::");
         Logger.getGlobal().log(Level.INFO, "::Time are randomized");
-        Logger.getGlobal().log(Level.INFO, "::Max Think Time: " + (Philosopher.EATTIME / 1000) % 60 + "s");
-        Logger.getGlobal().log(Level.INFO, "::Max Eat Time: " + (Philosopher.THINKTIME / 1000) % 60 + "s");
-        Logger.getGlobal().log(Level.INFO, "::Max Eat Sleep: " + (Philosopher.SLEEPTIME / 1000) % 60 + "s");
         Logger.getGlobal().log(Level.INFO, "::Available Seats: " + AVAILABLE_SEATS);
         Logger.getGlobal().log(Level.INFO, "::Available Ushers: " + AVAILABLE_USHERS);
         Logger.getGlobal().log(Level.INFO, "::Number Of Philosophers: " + NUMBER_OF_PHILOSOPHERS);

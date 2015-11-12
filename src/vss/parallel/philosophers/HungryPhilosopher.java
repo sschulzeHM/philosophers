@@ -11,26 +11,28 @@ public class HungryPhilosopher extends Philosopher
         allowNeeds();
     }
 
+    @Override
     public synchronized void restrictNeeds()
     {
-        EATTIME = Philosopher.EATTIME;
-        THINKTIME = Philosopher.THINKTIME;
-        SLEEPTIME = Philosopher.SLEEPTIME;
-        MAX_MEALS_BEFORE_SLEEP = Philosopher.MAX_MEALS_BEFORE_SLEEP;
-        MAX_TRIES = Philosopher.MAX_TRIES;
+        EATTIME *= 0.5;
+        THINKTIME *= 2;
+        SLEEPTIME *= 2;
+        MAX_MEALS_BEFORE_SLEEP *= 0.5;
+        MAX_TRIES *= 0.5;
 
-        this.setPriority(Thread.NORM_PRIORITY);
+        setPriority(Thread.NORM_PRIORITY);
     }
 
+    @Override
     public synchronized void allowNeeds()
     {
-        EATTIME = Philosopher.EATTIME / 2;
-        THINKTIME = Philosopher.THINKTIME / 2;
-        SLEEPTIME = Philosopher.SLEEPTIME / 2;
-        MAX_MEALS_BEFORE_SLEEP = Philosopher.MAX_MEALS_BEFORE_SLEEP * 2;
-        MAX_TRIES = Philosopher.MAX_TRIES * 2;
+        EATTIME *= 2;
+        THINKTIME *= 0.5;
+        SLEEPTIME *= 0.5;
+        MAX_MEALS_BEFORE_SLEEP *= 2;
+        MAX_TRIES *= 2;
 
-        this.setPriority(Thread.MAX_PRIORITY);
+        setPriority(Thread.MAX_PRIORITY);
     }
 
     @Override

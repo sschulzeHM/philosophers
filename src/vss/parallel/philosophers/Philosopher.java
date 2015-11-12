@@ -13,14 +13,13 @@ import java.util.logging.Logger;
  */
 public class Philosopher extends Thread
 {
-	public static double EATTIME = 1000;
-	public static double THINKTIME = 2500;
-	public static double SLEEPTIME = 5000;
-	public static int MAX_TRIES = 3;
-	public static int MAX_MEALS_BEFORE_SLEEP = 3;
-
 	private final Table table;
 	private final int id;
+	public double EATTIME = 1000;
+	public double THINKTIME = 2500;
+	public double SLEEPTIME = 5000;
+	public int MAX_TRIES = 3;
+	public int MAX_MEALS_BEFORE_SLEEP = 3;
 	private int mealcounter;
 
 	private Seat seat;
@@ -41,15 +40,17 @@ public class Philosopher extends Thread
 			while (!Thread.interrupted())
 			{
 				think();
+				//TODO supervisor
 				usher = table.getUsher();
-				Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " is served by usher " + usher.getId() + ".");
+				Logger.getGlobal().log(Level.INFO, getOwnName() + " is served by usher " + usher.getId() + ".");
 				try {
 					seat = usher.getAvailableSeat(id);
 				} catch (InterruptedException e1) {
-					Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " is interrupted.");
+					// TODO
+					Logger.getGlobal().log(Level.INFO, getOwnName() + " is interrupted.");
 					break;
 				}
-				Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " receives seat " + seat.getId() + ".");
+				Logger.getGlobal().log(Level.INFO, getOwnName() + " receives seat " + seat.getId() + ".");
 
 				
 				try{
@@ -89,7 +90,7 @@ public class Philosopher extends Thread
 					usher.leaveSeat(seat);
 					if (requestCount >= MAX_TRIES)
 					{
-						Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " could not eat at seat " + seat.getId() + ".");
+						Logger.getGlobal().log(Level.WARNING, getOwnName() + " could not eat at seat " + seat.getId() + ".");
 					}
 				}
 				catch(InterruptedException e){
@@ -104,20 +105,20 @@ public class Philosopher extends Thread
 
 	private void eat(int philosopherID, int seatID)
 	{
-		Logger.getGlobal().log(Level.INFO, "Philosopher " + philosopherID + " eats at seat " + seatID + "." + " Meal: "+ mealcounter);
+		Logger.getGlobal().log(Level.INFO, getOwnName() + " eats at seat " + seatID + "." + " Meal: " + mealcounter);
 		try
 		{
 			sleep((int) (Math.random() * EATTIME));
 		}
 		catch (InterruptedException e)
 		{
-			Logger.getGlobal().log(Level.WARNING, "Philosopher " + philosopherID + " interrupted while eating at seat " + seatID + ".");
+			Logger.getGlobal().log(Level.WARNING, getOwnName() + " interrupted while eating at seat " + seatID + ".");
 			mealcounter = 0;
 			seat.releaseForks();
 			usher.leaveSeat(seat);
 
 		}
-		Logger.getGlobal().log(Level.INFO, "Philosopher " + philosopherID + " stops eating at seat " + seatID + ".");
+		Logger.getGlobal().log(Level.INFO, getOwnName() + " stops eating at seat " + seatID + ".");
 
 		mealcounter++;
 
@@ -125,14 +126,14 @@ public class Philosopher extends Thread
 
 	private void think()
 	{
-		Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " thinks.");
+		Logger.getGlobal().log(Level.INFO, getOwnName() + " thinks.");
 		try
 		{
 			sleep((int) ( THINKTIME));
 		}
 		catch (InterruptedException e)
 		{
-			Logger.getGlobal().log(Level.WARNING, "Philosopher " + id + " interrupted while thinking.");
+			Logger.getGlobal().log(Level.WARNING, getOwnName() + " interrupted while thinking.");
 		}
 	}
 
@@ -143,5 +144,15 @@ public class Philosopher extends Thread
 	protected String getOwnName()
 	{
 		return "Philosopher " + id;
+	}
+
+	public synchronized void restrictNeeds()
+	{
+		setPriority(Thread.MIN_PRIORITY);
+	}
+
+	public synchronized void allowNeeds()
+	{
+		setPriority(Thread.NORM_PRIORITY);
 	}
 }
