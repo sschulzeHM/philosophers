@@ -20,7 +20,7 @@ public class Usher
         this.seats = seats;
     }
 
-    public synchronized Seat getAvailableSeat(int id) throws InterruptedException
+    public synchronized Seat getAvailableSeat(int id)
     {
         while (true)
         {
@@ -33,28 +33,31 @@ public class Usher
                 }
             }
 
-            try {
-            	Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " waiting for a seat.");
-				wait();
-				Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " was awakened");
-			} catch (InterruptedException e) {
-				Logger.getGlobal().log(Level.INFO, "!!!!!!!!! a waiting philosoph is interrupted !!!!!!!!!!!");
-				throw new InterruptedException();
-			}
+            try
+            {
+                Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " waiting for a seat.");
+                wait();
+                Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " was awakened");
+            }
+            catch (InterruptedException e)
+            {
+                Logger.getGlobal().log(Level.INFO, "!!!!!!!!! A waiting philosoph is interrupted !!!!!!!!!!!");
+
+            }
         }
-        // never reached
     }
 
     public int getId()
     {
         return id;
     }
-    
-    //if a philosopher leaves the seat he has to wake up a waiting philosopher
-    //it is impossible to leave a seat and get a seat parallel. For both you need the usher. PROBLEM??? 
+
+    // when a philosopher leaves the seat, he has to wake up a waiting philosopher
+    // it is impossible to leave a seat and get a seat parallel. For both you need the usher. PROBLEM???
     //--> Solution maybe: synchronize the seat, too
-    public synchronized void leaveSeat(Seat seat){
-    	seat.leave();
-    	notify();
+    public synchronized void leaveSeat(Seat seat)
+    {
+        seat.leave();
+        notify();
     }
 }

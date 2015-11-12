@@ -117,16 +117,19 @@ public class Seat
     {
         available = true;
     }
-    
-    public void releaseOwnedForks(){
-    	if(successOwnFork){
-    		releaseRightFork();
-    		successOwnFork = false;
-    	}
-    	
-    	if(successOtherFork){
-    		leftNeighbor.releaseRightFork();
-    		successOtherFork = false;
-    	}
+
+    public void releaseOwnedForks()
+    {
+        if (successOwnFork)
+        {
+            releaseRightFork();
+            successOwnFork = false;
+        }
+
+        if (successOtherFork)
+        {
+            leftNeighbor.releaseRightFork();
+            successOtherFork = false;
+        }
     }
 }

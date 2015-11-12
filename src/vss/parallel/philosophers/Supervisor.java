@@ -1,77 +1,61 @@
 package vss.parallel.philosophers;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Supervisor extends Thread
 {
 
-    private final Table table;
-    private final int NUMBER_OF_PHILOSOPHERS;
-    private final int NUMBER_OF_HUNGRY_PHILOSOPHERS;
-    private HashMap<Philosopher, Integer> philosophers;
+    private static final long SLEEP_TIME = 3000;
+    private final int MAX_MEALS;
+    private Philosopher philosophers[];
 
-    public Supervisor(Table table, int numOfPhil, int numOfHungPhil)
+    public Supervisor(Philosopher[] philosophers, int maxMeals)
     {
-        this.table = table;
-        NUMBER_OF_PHILOSOPHERS = numOfPhil;
-        NUMBER_OF_HUNGRY_PHILOSOPHERS = numOfHungPhil;
-        initializePhilosophers();
-        startPhilosophers();
+        this.philosophers = philosophers;
+        MAX_MEALS = maxMeals;
     }
 
-    private void initializePhilosophers()
-    {
-        philosophers = new LinkedHashMap<>();
-        for (int i = 0; i < NUMBER_OF_PHILOSOPHERS; i++)
-        {
-            philosophers.put(new Philosopher(table, i), 0);
-        }
-
-        for (int i = 0; i < NUMBER_OF_HUNGRY_PHILOSOPHERS; i++)
-        {
-            philosophers.put(new HungryPhilosopher(table, NUMBER_OF_PHILOSOPHERS + i), 0);
-        }
-    }
-
-    private void startPhilosophers()
-    {
-        Set<Philosopher> phils = philosophers.keySet();
-        for (Philosopher philosopher : phils)
-        {
-            philosopher.start();
-        }
-    }
 
     public void run()
     {
-        Set<Philosopher> phils = philosophers.keySet();
-        int currentMinMeals = 0;
-        int currentMeals = 0;
         while (true)
         {
-            for (Philosopher philosopher : phils)
+            int min = Integer.MAX_VALUE;
+            int currentMeal = 0;
+
+            // collect min meals from all philosophers
+            for (Philosopher phil : philosophers)
             {
-                currentMeals = philosopher.getMeals();
-                if (currentMeals < currentMinMeals)
+                currentMeal = phil.getMeals();
+                if (currentMeal < min)
                 {
-                    currentMinMeals = currentMeals;
-                }
-                if (currentMinMeals >= philosopher.MAX_MEALS_BEFORE_SLEEP)
-                {
-                    Logger.getGlobal().log(Level.INFO, philosopher.getOwnName() + " ate too much (" + philosopher.MAX_MEALS_BEFORE_SLEEP + " times). He has to leave the Table.");
-                    philosopher.interrupt();
+                    min = currentMeal;
                 }
             }
+
+            // set canEat on all philosophers
+            Logger.getGlobal().log(Level.INFO, "Current Min Meals: " + min + ".");
+            for (Philosopher phil : philosophers)
+            {
+                if (phil.getMeals() >= min + MAX_MEALS)
+                {
+                    phil.setCanEat(false);
+                }
+                else
+                {
+                    phil.setCanEat(true);
+                }
+            }
+
+            // sleep
             try
             {
-                Thread.sleep(100);
+                sleep(SLEEP_TIME);
             }
             catch (InterruptedException e)
             {
+                e.printStackTrace();
             }
         }
     }
