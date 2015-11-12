@@ -20,7 +20,7 @@ public class Usher
         this.seats = seats;
     }
 
-    public synchronized Seat getAvailableSeat(int id)
+    public synchronized Seat getAvailableSeat(String philName)
     {
         while (true)
         {
@@ -35,9 +35,9 @@ public class Usher
 
             try
             {
-                Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " waiting for a seat.");
+                Logger.getGlobal().log(Level.INFO, philName + " waiting for a seat.");
                 wait();
-                Logger.getGlobal().log(Level.INFO, "Philosopher " + id + " was awakened");
+                Logger.getGlobal().log(Level.INFO, philName + " was awakened");
             }
             catch (InterruptedException e)
             {

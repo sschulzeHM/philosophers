@@ -41,10 +41,12 @@ public class Supervisor extends Thread
                 if (phil.getMeals() >= min + MAX_MEALS)
                 {
                     phil.setCanEat(false);
+                    phil.restrictNeeds();
                 }
                 else
                 {
                     phil.setCanEat(true);
+                    phil.allowNeeds();
                 }
             }
 

@@ -19,7 +19,7 @@ public class HungryPhilosopher extends Philosopher
         SLEEPTIME *= 2;
         MAX_TRIES *= 0.5;
 
-        this.setPriority(Thread.NORM_PRIORITY);
+        this.setPriority(Thread.MIN_PRIORITY);
     }
 
     @Override

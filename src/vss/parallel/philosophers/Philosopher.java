@@ -44,12 +44,12 @@ public class Philosopher extends Thread
                 usher = table.getUsher();
                 Logger.getGlobal().log(Level.INFO, getOwnName() + " is served by usher " + usher.getId() + ".");
 
-                seat = usher.getAvailableSeat(id);
+                seat = usher.getAvailableSeat(getOwnName());
                 Logger.getGlobal().log(Level.INFO, getOwnName() + " receives seat " + seat.getId() + ".");
 
                 try
                 {
-                    boolean success = seat.take(false);
+                    boolean success = seat.take(false, getOwnName());
                     int requestCount = 0;
 
                     while (!success && requestCount <= MAX_TRIES)
@@ -65,11 +65,11 @@ public class Philosopher extends Thread
 
                         if (requestCount >= MAX_TRIES)
                         {
-                            success = seat.take(true);
+                            success = seat.take(true, getOwnName());
                         }
                         else
                         {
-                            success = seat.take(false);
+                            success = seat.take(false, getOwnName());
                         }
                         requestCount++;
                     }

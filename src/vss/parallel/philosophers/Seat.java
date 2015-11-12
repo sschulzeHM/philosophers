@@ -68,14 +68,14 @@ public class Seat
         return id;
     }
 
-    public boolean take(boolean releaseAnyway)
+    public boolean take(boolean releaseAnyway, String philName)
     {
         if (!successOwnFork)
         {
             successOwnFork = takeRightFork();
             if (successOwnFork)
             {
-                Logger.getGlobal().log(Level.INFO, "Seat " + getId() + " takes fork " + rightFork.getId() + ".");
+                Logger.getGlobal().log(Level.INFO, philName + " at Seat " + getId() + " takes fork " + rightFork.getId() + ".");
             }
         }
         if (!successOtherFork)
@@ -83,7 +83,7 @@ public class Seat
             successOtherFork = leftNeighbor.takeRightFork();
             if (successOtherFork)
             {
-                Logger.getGlobal().log(Level.INFO, "Seat " + getId() + " takes fork from neighbor " + leftNeighbor.getId() + ".");
+                Logger.getGlobal().log(Level.INFO, philName + " at Seat " + getId() + " takes fork from neighbor Seat " + leftNeighbor.getId() + ".");
             }
         }
 
