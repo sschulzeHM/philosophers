@@ -16,7 +16,6 @@ public class Philosophers
     private static final int NUMBER_OF_PHILOSOPHERS = 1;
     private static final int NUMBER_OF_HUNGRY_PHILOSOPHERS = 1;
     private static final int MAX_MEALS = 3;
-   
     
     public static void main(String[] args)
     {
