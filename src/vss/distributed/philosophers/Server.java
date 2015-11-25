@@ -2,6 +2,10 @@ package vss.distributed.philosophers;
 
 import vss.utils.LogFormatter;
 
+import java.net.ConnectException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -9,6 +13,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
+
+import javax.swing.plaf.SliderUI;
 
 /**
  * Created by stefanschulze on 18.11.15.
@@ -31,19 +37,32 @@ public class Server
         Logger.getGlobal().addHandler(consoleHandler);
 
         // remote logger
-        IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
-
+        
         int port = getPortFromArgs(args);
         LocateRegistry.createRegistry(port);
         Registry registry = LocateRegistry.getRegistry();
 
+        IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
         Remote stubLogger = UnicastRemoteObject.exportObject(remoteLogger, port);
         registry.rebind("ServerRemoteLogger", stubLogger);
+        
+        IRegister registerAgent = new RegisterAgent(registry);
+        Remote  stubRegisterAgent = UnicastRemoteObject.exportObject(registerAgent, port);
+        registry.rebind("RegisterAgent", stubRegisterAgent);
 
         remoteLogger.logInfo("Server online...");
-        while (true)
+  
+        IAgent clientAgent ;
+        while(true)
         {
-
+        	try {
+				clientAgent = (IAgent) registry.lookup("ClientAgent");
+				clientAgent.receiveInfo("Message: Server to Client");
+			} catch (NotBoundException e) {
+				
+			}
+        	
+        	
         }
 
     }
