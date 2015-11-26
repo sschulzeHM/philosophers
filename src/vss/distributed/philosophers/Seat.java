@@ -46,16 +46,7 @@ public class Seat
     //syncronized because 2 seats can call this method
     public boolean takeRightFork()
     {
-        synchronized (rightFork)
-        {
-            if (!rightFork.isAvailable())
-            {
-                return false;
-            }
-
-            rightFork.setUnavailable();
-            return true;
-        }
+        return rightFork.take();
     }
 
     public void releaseRightFork()

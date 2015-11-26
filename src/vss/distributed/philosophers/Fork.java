@@ -14,6 +14,11 @@ public class Fork
         this.id = id;
     }
 
+    public int getId()
+    {
+        return id;
+    }
+
     public synchronized boolean isAvailable()
     {
         return available;
@@ -29,9 +34,14 @@ public class Fork
         this.available = true;
     }
 
-    public int getId()
+    public synchronized boolean take()
     {
-        return id;
+        if (!isAvailable())
+        {
+            return false;
+        }
+        setUnavailable();
+        return true;
     }
 
 }
