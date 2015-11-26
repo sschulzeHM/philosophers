@@ -6,11 +6,13 @@ import java.net.MalformedURLException;
 import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Created by stefanschulze on 18.11.15.
@@ -68,10 +70,17 @@ public class Client extends Thread
         ISpecification spec;
         Table table;
         Philosopher philosophers[];
+        IRegister registerAgent;
         while (true)
         {
             try
             {
+                IAgent clientAgent = new ClientAgent();
+                Remote stub = UnicastRemoteObject.exportObject(clientAgent, 0);
+                
+                registerAgent = (IRegister) Naming.lookup("//" + ip + ":" + port + "/RegisterAgent");
+                registerAgent.register(stub,"ClientAgent");
+                
                 spec = (ISpecification) Naming.lookup("//" + ip + ":" + port + "/Specification");
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
                 philosophers = new Philosopher[spec.getNumberOfPhilosophers()];
@@ -115,8 +124,6 @@ public class Client extends Thread
         {
             ip = args[1];
         }
-        return ip;
-    }
 
     private static int getPortFromArgs(String[] args)
     {
