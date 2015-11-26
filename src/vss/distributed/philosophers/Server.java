@@ -2,10 +2,6 @@ package vss.distributed.philosophers;
 
 import vss.utils.LogFormatter;
 
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -14,18 +10,16 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
-import javax.swing.plaf.SliderUI;
-
 /**
  * Created by stefanschulze on 18.11.15.
  */
 public class Server
 {
-    private static final int AVAILABLE_SEATS = 2;
-    private static final int AVAILABLE_USHERS = 1;
-    private static final int NUMBER_OF_PHILOSOPHERS = 1;
-    private static final int NUMBER_OF_HUNGRY_PHILOSOPHERS = 1;
-    private static final int MAX_MEALS = 3;
+    private static int AVAILABLE_SEATS = 2;
+    private static int AVAILABLE_USHERS = 1;
+    private static int NUMBER_OF_PHILOSOPHERS = 1;
+    private static int NUMBER_OF_HUNGRY_PHILOSOPHERS = 1;
+    private static int MAX_MEALS = 3;
 
     public static void main(String[] args) throws RemoteException
     {
@@ -36,37 +30,41 @@ public class Server
         consoleHandler.setFormatter(formatter);
         Logger.getGlobal().addHandler(consoleHandler);
 
-        // remote logger
-        IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
-        ISpecification clientSpec = new Specification(4, 1, 2);
-
+        // parse arguments
         int port = getPortFromArgs(args);
         LocateRegistry.createRegistry(port);
         Registry registry = LocateRegistry.getRegistry();
 
+        // create remote objects
+        IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
         Remote stubLogger = UnicastRemoteObject.exportObject(remoteLogger, port);
         registry.rebind("ServerRemoteLogger", stubLogger);
-        
+
         IRegister registerAgent = new RegisterAgent(registry);
-        Remote  stubRegisterAgent = UnicastRemoteObject.exportObject(registerAgent, port);
+        Remote stubRegisterAgent = UnicastRemoteObject.exportObject(registerAgent, port);
         registry.rebind("RegisterAgent", stubRegisterAgent);
 
+        ISpecification clientSpec = new Specification(4, 1, 2);
         Remote stubSpec = UnicastRemoteObject.exportObject(clientSpec, port);
         registry.rebind("Specification", stubSpec);
 
+        IConnectionAgent connectionAgent = new ConnectionAgent();
+        Remote stubConnectionAgent = UnicastRemoteObject.exportObject(connectionAgent, port);
+        registry.rebind("ConnectionAgent", stubConnectionAgent);
+
         remoteLogger.logInfo("Server online...");
-  
-        IAgent clientAgent ;
-        while(true)
+
+        //IAgent clientAgent;
+        while (true)
         {
-        	try {
-				clientAgent = (IAgent) registry.lookup("ClientAgent");
-				clientAgent.receiveInfo("Message: Server to Client");
-			} catch (NotBoundException e) {
-				
-			}
-        	
-        	
+            /*try
+            {
+                clientAgent = (IAgent) registry.lookup("ClientAgent");
+                clientAgent.receiveInfo("Message: Server to Client");
+            }
+            catch (NotBoundException e)
+            {
+            }*/
         }
 
     }

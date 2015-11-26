@@ -24,15 +24,30 @@ public class Specification implements ISpecification
         return numberOfPhilosophers;
     }
 
+    public void setNumberOfPhilosophers(int numberOfPhilosophers)
+    {
+        this.numberOfPhilosophers = numberOfPhilosophers;
+    }
+
     @Override
     public int getNumberOfUshers() throws RemoteException
     {
         return numberOfUshers;
     }
 
+    public void setNumberOfUshers(int numberOfUshers)
+    {
+        this.numberOfUshers = numberOfUshers;
+    }
+
     @Override
     public int getNumberOfSeats() throws RemoteException
     {
         return numberOfSeats;
+    }
+
+    public void setNumberOfSeats(int numberOfSeats)
+    {
+        this.numberOfSeats = numberOfSeats;
     }
 }
