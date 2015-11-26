@@ -32,6 +32,7 @@ public class Server
 
         // remote logger
         IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
+        ISpecification clientSpec = new Specification(4, 1, 2);
 
         int port = getPortFromArgs(args);
         LocateRegistry.createRegistry(port);
@@ -40,7 +41,11 @@ public class Server
         Remote stubLogger = UnicastRemoteObject.exportObject(remoteLogger, port);
         registry.rebind("ServerRemoteLogger", stubLogger);
 
+        Remote stubSpec = UnicastRemoteObject.exportObject(clientSpec, port);
+        registry.rebind("Specification", stubSpec);
+
         remoteLogger.logInfo("Server online...");
+
         while (true)
         {
 

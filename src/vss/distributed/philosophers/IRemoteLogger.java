@@ -9,6 +9,5 @@ import java.rmi.RemoteException;
 public interface IRemoteLogger extends Remote
 {
     void logInfo(String message) throws RemoteException;
-
     void logError(String message) throws RemoteException;
 }
