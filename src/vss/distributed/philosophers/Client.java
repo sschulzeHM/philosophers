@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public class Client extends Thread
 {
     private static final int WAIT_TIME = 3000;
+    private int ID;
 
     public static void main(String[] args) throws RemoteException
     {
@@ -32,13 +33,14 @@ public class Client extends Thread
         Logger.getGlobal().log(Level.INFO, "Client is running on port " + port + ". Connecting to " + host);
 
         IConnectionAgent connectionAgent;
+        int id;
 
         while (true)
         {
             try
             {
                 connectionAgent = (IConnectionAgent) Naming.lookup("//" + host + ":" + port + "/ConnectionAgent");
-                connectionAgent.connect("Client");
+                id = connectionAgent.connect();
                 break;
             }
             catch (MalformedURLException e)
@@ -71,13 +73,13 @@ public class Client extends Thread
         {
             try
             {
-                IAgent clientAgent = new ClientAgent();
-                Remote stub = UnicastRemoteObject.exportObject(clientAgent, 0);
+//                IAgent clientAgent = new ClientAgent();
+//                Remote stub = UnicastRemoteObject.exportObject(clientAgent, 0);
 
-                registerAgent = (IRegister) Naming.lookup("//" + host + ":" + port + "/RegisterAgent");
-                registerAgent.register(stub, "ClientAgent");
+//                registerAgent = (IRegister) Naming.lookup("//" + host + ":" + port + "/RegisterAgent");
+//                registerAgent.register(stub, "ClientAgent");
 
-                spec = (ISpecification) Naming.lookup("//" + host + ":" + port + "/Specification");
+                spec = (ISpecification) Naming.lookup("//" + host + ":" + port + "/Client"+id+"Spec");
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
                 philosophers = new Philosopher[spec.getNumberOfPhilosophers()];
                 for (int i = 0; i < philosophers.length; i++)

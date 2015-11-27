@@ -8,5 +8,5 @@ import java.rmi.RemoteException;
  */
 public interface IConnectionAgent extends Remote
 {
-    void connect(String id) throws RemoteException;
+    int connect() throws RemoteException;
 }

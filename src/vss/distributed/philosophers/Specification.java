@@ -11,11 +11,14 @@ public class Specification implements ISpecification
     private int numberOfUshers;
     private int numberOfSeats;
 
-    public Specification(int numberOfPhilosophers, int numberOfUshers, int numberOfSeats)
+    private final int clientID;
+
+    public Specification(int numberOfPhilosophers, int numberOfUshers, int numberOfSeats, int clientID)
     {
         this.numberOfPhilosophers = numberOfPhilosophers;
         this.numberOfUshers = numberOfUshers;
         this.numberOfSeats = numberOfSeats;
+        this.clientID = clientID;
     }
 
     @Override
@@ -45,6 +48,9 @@ public class Specification implements ISpecification
     {
         return numberOfSeats;
     }
+
+    @Override
+    public int getClientID() throws RemoteException { return clientID;}
 
     public void setNumberOfSeats(int numberOfSeats)
     {

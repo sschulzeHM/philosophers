@@ -44,11 +44,11 @@ public class Server
         Remote stubRegisterAgent = UnicastRemoteObject.exportObject(registerAgent, port);
         registry.rebind("RegisterAgent", stubRegisterAgent);
 
-        ISpecification clientSpec = new Specification(4, 1, 2);
-        Remote stubSpec = UnicastRemoteObject.exportObject(clientSpec, port);
-        registry.rebind("Specification", stubSpec);
+//        ISpecification clientSpec = new Specification(4, 1, 2, );
+//        Remote stubSpec = UnicastRemoteObject.exportObject(clientSpec, port);
+//        registry.rebind("Specification", stubSpec);
 
-        IConnectionAgent connectionAgent = new ConnectionAgent();
+        IConnectionAgent connectionAgent = new ConnectionAgent(registry);
         Remote stubConnectionAgent = UnicastRemoteObject.exportObject(connectionAgent, port);
         registry.rebind("ConnectionAgent", stubConnectionAgent);
 
