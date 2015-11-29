@@ -19,7 +19,6 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     public void setRemoteSeat(IRemoteSeat remote) throws RemoteException
     {
         firstSeat.setLeftNeighbor(remote);
-        // TODO localservice check periodically for remote exception and reset leftNeighbor to local
         agent = new LocalSeatAgent(firstSeat, lastSeat, remote);
         agent.start();
     }

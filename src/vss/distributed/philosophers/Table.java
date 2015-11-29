@@ -62,7 +62,6 @@ public class Table
     {
         if (i == 0)
         {
-            // TODO RMI SEAT
             return seats[seats.length - 1];
         }
 
