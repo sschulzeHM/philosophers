@@ -4,7 +4,6 @@ import vss.utils.LogFormatter;
 
 import java.net.MalformedURLException;
 import java.rmi.*;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -13,7 +12,7 @@ import java.util.logging.Logger;
 /**
  * Created by stefanschulze on 18.11.15.
  */
-public class Client extends Thread
+public class Client extends HostApplication
 {
     private static final int WAIT_TIME = 3000;
     private int ID;
@@ -69,23 +68,41 @@ public class Client extends Thread
         Table table;
         Philosopher philosophers[];
         IRegister registerAgent;
+        IClientAgent clientAgent;
         while (true)
         {
             try
             {
-//                IAgent clientAgent = new ClientAgent();
-//                Remote stub = UnicastRemoteObject.exportObject(clientAgent, 0);
-
-//                registerAgent = (IRegister) Naming.lookup("//" + host + ":" + port + "/RegisterAgent");
-//                registerAgent.register(stub, "ClientAgent");
-
+                // get specification
                 spec = (ISpecification) Naming.lookup("//" + host + ":" + port + "/Client"+id+"Spec");
+                Logger.getGlobal().log(Level.INFO, "Client " + spec.getClientID() + " Philosopher: " + spec.getNumberOfPhilosophers() + " Seats: " + spec.getNumberOfSeats());
+                // init table
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
+
+                // create own agent
+                clientAgent = new ClientAgent(table.getFirstSeat(), table.getLastSeat());
+                Remote stubAgent = UnicastRemoteObject.exportObject(clientAgent, 0);
+                registerAgent = (IRegister) Naming.lookup("//" + host + ":" + port + "/RegisterAgent");
+                registerAgent.register(stubAgent, String.format("ClientAgent%d", id));
+
+                sleep(5000);
+
+                // get neighbor agent
+                String neighborAddres = connectionAgent.getNeighborAgentAddres(id);
+                IClientAgent neighborAgent = (IClientAgent) Naming.lookup(neighborAddres);
+
+                // set remote seat
+                Remote stubSeat = UnicastRemoteObject.exportObject(table.getLastSeat(), 0);
+                neighborAgent.setRemoteSeat((IRemoteSeat) stubSeat);
+
+                // create philosophers
                 philosophers = new Philosopher[spec.getNumberOfPhilosophers()];
                 for (int i = 0; i < philosophers.length; i++)
                 {
                     philosophers[i] = new Philosopher(table, i);
                 }
+
+                // start philosophers
                 for (Philosopher phil : philosophers)
                 {
                     phil.start();
@@ -104,6 +121,10 @@ public class Client extends Thread
             {
                 Logger.getGlobal().log(Level.WARNING, "Server spec not available. Trying again in " + WAIT_TIME / 1000 + " seconds.");
             }
+            catch (InterruptedException e)
+            {
+
+            }
             try
             {
                 sleep(WAIT_TIME);
@@ -113,40 +134,5 @@ public class Client extends Thread
                 Logger.getGlobal().log(Level.WARNING, "Sleep interrupted.");
             }
         }
-    }
-
-    private static String getHostFromArgs(String[] args)
-    {
-        String host = "localhost";
-        if (args.length > 1)
-        {
-            host = args[1];
-        }
-        return host;
-    }
-
-    private static int getPortFromArgs(String[] args)
-    {
-        int port = 0;
-        if (args.length < 1)
-        {
-            port = Registry.REGISTRY_PORT;
-        }
-        else
-        {
-            try
-            {
-                port = Integer.parseInt(args[0]);
-            }
-            catch (NumberFormatException e)
-            {
-                port = Registry.REGISTRY_PORT;
-            }
-        }
-        if (port == 0)
-        {
-            port = Registry.REGISTRY_PORT;
-        }
-        return port;
     }
 }

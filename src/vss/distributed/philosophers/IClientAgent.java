@@ -3,9 +3,9 @@ package vss.distributed.philosophers;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface IAgent extends Remote
+public interface IClientAgent extends Remote
 {
-
+    void setRemoteSeat(IRemoteSeat remote) throws RemoteException;
     void receiveInfo(String message) throws RemoteException;
 
 }

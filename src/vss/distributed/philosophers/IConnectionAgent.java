@@ -9,4 +9,6 @@ import java.rmi.RemoteException;
 public interface IConnectionAgent extends Remote
 {
     int connect() throws RemoteException;
+
+    String getNeighborAgentAddres(int id) throws RemoteException;
 }

@@ -1,5 +1,6 @@
 package vss.distributed.philosophers;
 
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,10 +46,11 @@ public class Philosopher extends Thread
                 Logger.getGlobal().log(Level.INFO, getOwnName() + " is served by usher " + usher.getId() + ".");
 
                 seat = usher.getAvailableSeat(getOwnName());
-                Logger.getGlobal().log(Level.INFO, getOwnName() + " receives seat " + seat.getId() + ".");
 
                 try
                 {
+                    Logger.getGlobal().log(Level.INFO, getOwnName() + " receives seat " + seat.getId() + ".");
+
                     boolean success = seat.take(false, getOwnName());
                     int requestCount = 0;
 
@@ -88,7 +90,33 @@ public class Philosopher extends Thread
                 }
                 catch (InterruptedException e)
                 {
-                    seat.releaseOwnedForks();
+                    try
+                    {
+                        seat.releaseOwnedForks();
+                    }
+                    catch (RemoteException e1)
+                    {
+                        usher.leaveSeat(seat);
+                        break;
+                    }
+
+                    usher.leaveSeat(seat);
+                    break;
+                }
+                catch (RemoteException e)
+                {
+                    try
+                    {
+                        seat.resetOtherSuccess();
+                        Logger.getGlobal().log(Level.WARNING, getOwnName() + " could not eat at seat " + seat.getId() + ". Remote seat not available.");
+                        seat.releaseOwnedForks();
+                    }
+                    catch (RemoteException e1)
+                    {
+                        usher.leaveSeat(seat);
+                        break;
+                    }
+
                     usher.leaveSeat(seat);
                     break;
                 }
@@ -107,7 +135,14 @@ public class Philosopher extends Thread
         catch (InterruptedException e)
         {
             Logger.getGlobal().log(Level.WARNING, getOwnName() + " interrupted while eating at seat " + seatID + ".");
-            seat.releaseForks();
+            try
+            {
+                seat.releaseForks();
+            }
+            catch (RemoteException e1)
+            {
+                usher.leaveSeat(seat);
+            }
             usher.leaveSeat(seat);
 
         }

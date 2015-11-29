@@ -62,6 +62,7 @@ public class Table
     {
         if (i == 0)
         {
+            // TODO RMI SEAT
             return seats[seats.length - 1];
         }
 
@@ -71,5 +72,25 @@ public class Table
     private int getRightForkID(int i)
     {
         return i;
+    }
+
+    public Seat getFirstSeat()
+    {
+        if (seats.length < 1)
+        {
+            return null;
+        }
+
+        return seats[0];
+    }
+
+    public Seat getLastSeat()
+    {
+        if (seats.length < 1)
+        {
+            return null;
+        }
+
+        return seats[seats.length - 1];
     }
 }

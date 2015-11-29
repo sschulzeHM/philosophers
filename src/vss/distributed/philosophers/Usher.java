@@ -1,5 +1,6 @@
 package vss.distributed.philosophers;
 
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,6 +58,14 @@ public class Usher
     //--> Solution maybe: synchronize the seat, too
     public synchronized void leaveSeat(Seat seat)
     {
+        try
+        {
+            Logger.getGlobal().log(Level.INFO, "Usher leave Seat " + seat.getId());
+        }
+        catch (RemoteException e)
+        {
+            Logger.getGlobal().log(Level.INFO, "Usher receices Remote Exception.");
+        }
         seat.leave();
         notify();
     }
