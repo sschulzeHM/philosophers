@@ -14,5 +14,5 @@ public interface ISpecification extends Remote
 
     int getNumberOfSeats() throws RemoteException;
 
-    int getClientID() throws RemoteException;
+    String getClientID() throws RemoteException;
 }

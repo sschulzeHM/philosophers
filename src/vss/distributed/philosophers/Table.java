@@ -1,6 +1,8 @@
 package vss.distributed.philosophers;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by stefanschulze on 12.10.15.
@@ -99,18 +101,36 @@ public class Table
         return seats[seats.length - 1];
     }
 
-    public void insertSeats(int countSeats, int afterSeat){
-        for(Usher usher : ushers){
+    public boolean stop()
+    {
+        for (Usher usher : ushers)
+        {
             usher.stopRunning();
         }
 
         boolean allSeatFree = false;
-        while(!allSeatFree)
-            for(Seat seat : seats){
+        while (!allSeatFree)
+        {
+            for (Seat seat : seats)
+            {
                 allSeatFree |= seat.isAvailable();
             }
+        }
+        return true;
+    }
 
-        System.out.println("All was stopped and all Seats are free");
+    public void continueRunning()
+    {
+        for (Usher usher : ushers)
+        {
+            usher.continueRunning();
+        }
+    }
+
+    public void insertSeats(int countSeats, int afterSeat){
+        stop();
+
+        Logger.getGlobal().log(Level.INFO, "Everything was stopped and all Seats are free");
 
         Seat[] moreSeats = new Seat[seats.length + countSeats];
 
@@ -129,16 +149,12 @@ public class Table
             moreSeats[(afterSeat+1)+countSeats+j].setId((afterSeat+1)+countSeats+j);
         }
 
-
-
         seats = moreSeats;
 
         assignSeats(seats.length, ushers.length);
 
-        for(Usher usher: ushers){
-            usher.continueRunning();
-        }
+        continueRunning();
 
-        System.out.println("All is running again");
+        Logger.getGlobal().log(Level.INFO, "Evering is running again");
     }
 }

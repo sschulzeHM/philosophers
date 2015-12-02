@@ -1,36 +1,76 @@
 package vss.distributed.philosophers;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientAgent implements IClientAgent, IRegisterObject
 {
+    private final IConnectionAgent connectionAgent;
+    private final String clientID;
     private Table table;
     private LocalSeatAgent agent;
 
-    public ClientAgent(Table table)
+    public ClientAgent(Table table, IConnectionAgent connectionAgent, String clientID)
     {
         this.table = table;
+        this.connectionAgent = connectionAgent;
+        this.clientID = clientID;
     }
 
     @Override
     public void setRemoteSeat(IRemoteSeat remote) throws RemoteException
     {
+        Logger.getGlobal().log(Level.INFO, String.format("Client %s setting remote seat %d", clientID, remote.getId()));
+        // stop local table
+        table.stop();
         table.getFirstSeat().setLeftNeighbor(remote);
-        agent = new LocalSeatAgent(table.getFirstSeat(), table.getLastSeat(), remote);
+        agent = new LocalSeatAgent(table, remote);
         agent.start();
+        table.continueRunning();
     }
 
-    //Do we need that anymore???
     @Override
-    public void receiveInfo(String message) throws RemoteException
+    public void update() throws RemoteException
     {
-        System.out.println(message);
+        // get neighbor agent
+        String neighborAddress = connectionAgent.getNeighborAgentAddress(clientID);
+        IClientAgent neighborAgent = null;
+        try
+        {
+            neighborAgent = (IClientAgent) Naming.lookup(neighborAddress);
+        }
+        catch (NotBoundException e)
+        {
+            Logger.getGlobal().log(Level.WARNING, String.format("Neighbor %s not available", neighborAddress));
+            return;
+        }
+        catch (MalformedURLException e)
+        {
+            Logger.getGlobal().log(Level.WARNING, String.format("Neighbor %s not available", neighborAddress));
+            return;
+        }
+
+        // local to global
+        // set remote seat
+        Remote stubSeat = UnicastRemoteObject.exportObject(table.getLastSeat(), 0);
+        neighborAgent.setRemoteSeat((IRemoteSeat) stubSeat);
     }
 
     @Override
     public void insertSeats(int countSeats, int afterSeat) throws RemoteException {
-        table.insertSeats(countSeats,afterSeat);
+        table.insertSeats(countSeats, afterSeat);
+    }
+
+    @Override
+    public boolean isAlive() throws RemoteException
+    {
+        return true;
     }
 
     @Override

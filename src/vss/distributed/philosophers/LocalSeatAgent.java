@@ -11,14 +11,12 @@ import java.util.logging.Logger;
 public class LocalSeatAgent extends Thread
 {
     private static final long SLEEP_TIME = 3000;
-    private Seat firstSeat;
-    private Seat lastSeat;
+    private final Table table;
     private IRemoteSeat remoteSeat;
 
-    public LocalSeatAgent(Seat firstSeat, Seat lastSeat, IRemoteSeat remoteSeat)
+    public LocalSeatAgent(Table table, IRemoteSeat remoteSeat)
     {
-        this.firstSeat = firstSeat;
-        this.lastSeat = lastSeat;
+        this.table = table;
         this.remoteSeat = remoteSeat;
     }
 
@@ -33,14 +31,22 @@ public class LocalSeatAgent extends Thread
             }
             catch (RemoteException e)
             {
+                while (table.stop())
+                {
+                }
+
                 try
                 {
-                    Logger.getGlobal().log(Level.INFO, "Reconnecting local seat " + firstSeat.getId() + " and seat " + lastSeat.getId());
+                    table.getLastSeat().releaseRightFork();
+                    Logger.getGlobal().log(Level.INFO, "Reconnecting local seat " + table.getFirstSeat().getId() + " and seat " + table.getLastSeat().getId());
                 }
                 catch (RemoteException e1)
                 {
+                    Logger.getGlobal().log(Level.INFO, "Remote exception during reconnection.");
                 }
-                firstSeat.setLeftNeighbor(lastSeat);
+
+                table.getFirstSeat().setLeftNeighbor(table.getLastSeat());
+                table.continueRunning();
                 break;
             }
             try

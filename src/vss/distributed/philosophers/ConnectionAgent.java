@@ -1,11 +1,14 @@
 package vss.distributed.philosophers;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,17 +26,15 @@ public class ConnectionAgent implements IConnectionAgent
     private final Registry registry;
     private final String host;
     private final int port;
-    private int counterClientID;
 
-    private HashMap<Integer,ISpecification> clientSpecs;
+    private ArrayList<String> clients;
 
     public ConnectionAgent(Registry registry, String host, int port)
     {
         this.registry = registry;
         this.host = host;
         this.port = port;
-        this.counterClientID = 0;
-        this.clientSpecs = new HashMap<>();
+        this.clients = new ArrayList<>();
     }
 
     /**
@@ -42,38 +43,81 @@ public class ConnectionAgent implements IConnectionAgent
      * @throws RemoteException
      */
     @Override
-    public synchronized int connect() throws RemoteException
+    public synchronized String connect(String host, int port) throws RemoteException
     {
-        counterClientID++;
-        clientSpecs.put(counterClientID, new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS + (counterClientID - 1), counterClientID));
-        Remote stubSpec = UnicastRemoteObject.exportObject(clientSpecs.get(counterClientID), 0);
-        registry.rebind(String.format("Client%dSpec", counterClientID), stubSpec);
-        Logger.getGlobal().log(Level.INFO, "Client " + counterClientID + " connected.");
-        return counterClientID;
+        String id = String.format("%s%d", host.replace(".", ""), port);
+
+        int i = clients.indexOf(id);
+        if (i == -1)
+        {
+            clients.add(id);
+        }
+
+        ISpecification spec = new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS++, id);
+        Remote stubSpec = UnicastRemoteObject.exportObject(spec, 0);
+
+        registry.rebind(String.format("ClientSpec%s", id), stubSpec);
+        Logger.getGlobal().log(Level.INFO, "Client " + id + " connected.");
+        return id;
     }
 
     @Override
-    public String getNeighborAgentAddres(int id) throws RemoteException
+    public String getNeighborAgentAddress(String id) throws RemoteException
     {
-        int neighborID = 1;
-
-        // requesting client is 1 and there are more than one client
-        if (id == 1)
-        {
-            neighborID = clientSpecs.size();
-        }
-
-        // default; many clients, not the first is requesting
-        else
-        {
-            neighborID = id - 1;
-        }
-
-        return String.format("//%s:%d/ClientAgent%d", host, port, neighborID);
+        updateClientList();
+        String neighborID = clients.get((clients.indexOf(id) + 1) % clients.size());
+        String address = "//" + host + ":" + port + String.format("/ClientAgent%s", neighborID);
+        return address;
     }
 
     public int getNumOfClients() {
-        return clientSpecs.size();
+        return clients.size();
+    }
+
+    public String getClient(int index)
+    {
+        if (index >= clients.size())
+        {
+            return "";
+        }
+        return clients.get(index);
+    }
+
+    private void updateClientList()
+    {
+        IClientAgent neighborAgent;
+        String clientID;
+        String address;
+        for (Iterator<String> iterator = clients.iterator(); iterator.hasNext(); )
+        {
+            clientID = iterator.next();
+            address = "//" + host + ":" + port + String.format("/ClientAgent%s", clientID);
+            try
+            {
+                Logger.getGlobal().log(Level.INFO, "Trying " + clientID + " at " + address);
+                neighborAgent = (IClientAgent) Naming.lookup(address);
+            }
+            catch (NotBoundException e)
+            {
+                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                iterator.remove();
+                continue;
+            }
+            catch (MalformedURLException e)
+            {
+                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                iterator.remove();
+                continue;
+            }
+            catch (RemoteException e)
+            {
+                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                iterator.remove();
+                continue;
+            }
+        }
     }
 
 }
+
+

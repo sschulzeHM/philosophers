@@ -7,13 +7,12 @@ import java.rmi.RemoteException;
  */
 public class Specification implements ISpecification
 {
+    private final String clientID;
     private int numberOfPhilosophers;
     private int numberOfUshers;
     private int numberOfSeats;
 
-    private final int clientID;
-
-    public Specification(int numberOfPhilosophers, int numberOfUshers, int numberOfSeats, int clientID)
+    public Specification(int numberOfPhilosophers, int numberOfUshers, int numberOfSeats, String clientID)
     {
         this.numberOfPhilosophers = numberOfPhilosophers;
         this.numberOfUshers = numberOfUshers;
@@ -49,11 +48,11 @@ public class Specification implements ISpecification
         return numberOfSeats;
     }
 
-    @Override
-    public int getClientID() throws RemoteException { return clientID;}
-
     public void setNumberOfSeats(int numberOfSeats)
     {
         this.numberOfSeats = numberOfSeats;
     }
+
+    @Override
+    public String getClientID() throws RemoteException { return clientID;}
 }

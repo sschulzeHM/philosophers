@@ -7,7 +7,7 @@ import java.rmi.registry.Registry;
  */
 public class HostApplication extends Thread
 {
-    public static int getPortFromArgs(String[] args)
+    public static int getPortFromArgs(String[] args, int index)
     {
         int port = 0;
         if (args.length < 1)
@@ -18,7 +18,7 @@ public class HostApplication extends Thread
         {
             try
             {
-                port = Integer.parseInt(args[0]);
+                port = Integer.parseInt(args[index]);
             }
             catch (NumberFormatException e)
             {
@@ -32,12 +32,12 @@ public class HostApplication extends Thread
         return port;
     }
 
-    public static String getHostFromArgs(String[] args)
+    public static String getHostFromArgs(String[] args, int index)
     {
         String host = "localhost";
         if (args.length > 1)
         {
-            host = args[1];
+            host = args[index];
         }
         return host;
     }

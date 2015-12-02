@@ -2,10 +2,8 @@ package vss.distributed.philosophers;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 
-public interface IRegister extends Remote
+public interface IRegisterAgent extends Remote
 {
-
     void register(Remote registerObj, String name) throws RemoteException;
 }

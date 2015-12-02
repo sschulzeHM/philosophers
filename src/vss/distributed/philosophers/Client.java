@@ -27,19 +27,22 @@ public class Client extends HostApplication
         Logger.getGlobal().addHandler(consoleHandler);
         //Logger.getGlobal().setLevel(Level.OFF);
 
-        int port = getPortFromArgs(args);
-        String host = getHostFromArgs(args);
-        Logger.getGlobal().log(Level.INFO, "Client is running on port " + port + ". Connecting to " + host);
+        String myIP = getHostFromArgs(args, 2);
+        int myPort = getPortFromArgs(args, 3);
+
+        String serverIP = getHostFromArgs(args, 0);
+        int serverPort = getPortFromArgs(args, 1);
+        Logger.getGlobal().log(Level.INFO, "Client running. Connecting to " + serverIP + ":" + serverPort);
 
         IConnectionAgent connectionAgent;
-        int id;
+        String id;
 
         while (true)
         {
             try
             {
-                connectionAgent = (IConnectionAgent) Naming.lookup("//" + host + ":" + port + "/ConnectionAgent");
-                id = connectionAgent.connect();
+                connectionAgent = (IConnectionAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ConnectionAgent");
+                id = connectionAgent.connect(myIP, myPort);
                 break;
             }
             catch (MalformedURLException e)
@@ -67,33 +70,25 @@ public class Client extends HostApplication
         ISpecification spec;
         Table table;
         Philosopher philosophers[];
-        IRegister registerAgent;
+        IRegisterAgent registerAgent;
         IClientAgent clientAgent;
         while (true)
         {
             try
             {
                 // get specification
-                spec = (ISpecification) Naming.lookup("//" + host + ":" + port + "/Client"+id+"Spec");
-                Logger.getGlobal().log(Level.INFO, String.format("Client %d has to create Philosopher: %d,  Seats: %d, Ushers: %d",spec.getClientID(),spec.getNumberOfPhilosophers(),spec.getNumberOfSeats(),spec.getNumberOfUshers()));
+                spec = (ISpecification) Naming.lookup("//" + serverIP + ":" + serverPort + "/ClientSpec" + id);
+                Logger.getGlobal().log(Level.INFO, String.format("Client %s has to create Philosopher: %d,  Seats: %d, Ushers: %d", spec.getClientID(), spec.getNumberOfPhilosophers(), spec.getNumberOfSeats(), spec.getNumberOfUshers()));
                 // init table
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
 
                 // create own agent
-                clientAgent = new ClientAgent(table);
+                clientAgent = new ClientAgent(table, connectionAgent, id);
                 Remote stubAgent = UnicastRemoteObject.exportObject(clientAgent, 0);
-                registerAgent = (IRegister) Naming.lookup("//" + host + ":" + port + "/RegisterAgent");
-                registerAgent.register(stubAgent, String.format("ClientAgent%d", id));
+                registerAgent = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/RegisterAgent");
+                registerAgent.register(stubAgent, String.format("ClientAgent%s", id));
 
-                sleep(5000);
-
-                // get neighbor agent
-                String neighborAddres = connectionAgent.getNeighborAgentAddres(id);
-                IClientAgent neighborAgent = (IClientAgent) Naming.lookup(neighborAddres);
-
-                // set remote seat
-                Remote stubSeat = UnicastRemoteObject.exportObject(table.getLastSeat(), 0);
-                neighborAgent.setRemoteSeat((IRemoteSeat) stubSeat);
+                IClientAgent myAgent = (IClientAgent) Naming.lookup("//" + serverIP + ":" + serverPort + String.format("/ClientAgent%s", id));
 
                 // create philosophers
                 philosophers = new Philosopher[spec.getNumberOfPhilosophers()];
@@ -101,6 +96,7 @@ public class Client extends HostApplication
                 {
                     philosophers[i] = new Philosopher(table, i);
                 }
+                // TODO create hungry philosophers
 
                 // start philosophers
                 for (Philosopher phil : philosophers)
@@ -120,10 +116,6 @@ public class Client extends HostApplication
             catch (ConnectException e)
             {
                 Logger.getGlobal().log(Level.WARNING, "Server spec not available. Trying again in " + WAIT_TIME / 1000 + " seconds.");
-            }
-            catch (InterruptedException e)
-            {
-
             }
             try
             {
