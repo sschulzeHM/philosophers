@@ -5,7 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by stefanschulze on 29.11.15.
+ * Local agent on client side. Check if connection to remote client is alive.
+ * Change from remote execution mode to local execution mode if connection was disconnected.
  */
 public class LocalSeatAgent extends Thread
 {

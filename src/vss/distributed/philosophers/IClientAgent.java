@@ -7,5 +7,5 @@ public interface IClientAgent extends Remote
 {
     void setRemoteSeat(IRemoteSeat remote) throws RemoteException;
     void receiveInfo(String message) throws RemoteException;
-
+    void insertSeats(int countSeats, int afterSeat) throws RemoteException;
 }

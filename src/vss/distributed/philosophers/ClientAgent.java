@@ -5,29 +5,32 @@ import java.rmi.RemoteException;
 
 public class ClientAgent implements IClientAgent, IRegisterObject
 {
-    private Seat firstSeat;
-    private Seat lastSeat;
+    private Table table;
     private LocalSeatAgent agent;
 
-    public ClientAgent(Seat firstSeat, Seat lastSeat)
+    public ClientAgent(Table table)
     {
-        this.firstSeat = firstSeat;
-        this.lastSeat = lastSeat;
+        this.table = table;
     }
 
     @Override
     public void setRemoteSeat(IRemoteSeat remote) throws RemoteException
     {
-        firstSeat.setLeftNeighbor(remote);
-        agent = new LocalSeatAgent(firstSeat, lastSeat, remote);
+        table.getFirstSeat().setLeftNeighbor(remote);
+        agent = new LocalSeatAgent(table.getFirstSeat(), table.getLastSeat(), remote);
         agent.start();
     }
 
+    //Do we need that anymore???
     @Override
     public void receiveInfo(String message) throws RemoteException
     {
-
         System.out.println(message);
+    }
+
+    @Override
+    public void insertSeats(int countSeats, int afterSeat) throws RemoteException {
+        table.insertSeats(countSeats,afterSeat);
     }
 
     @Override

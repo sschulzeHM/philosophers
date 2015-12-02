@@ -75,12 +75,12 @@ public class Client extends HostApplication
             {
                 // get specification
                 spec = (ISpecification) Naming.lookup("//" + host + ":" + port + "/Client"+id+"Spec");
-                Logger.getGlobal().log(Level.INFO, "Client " + spec.getClientID() + " Philosopher: " + spec.getNumberOfPhilosophers() + " Seats: " + spec.getNumberOfSeats());
+                Logger.getGlobal().log(Level.INFO, String.format("Client %d has to create Philosopher: %d,  Seats: %d, Ushers: %d",spec.getClientID(),spec.getNumberOfPhilosophers(),spec.getNumberOfSeats(),spec.getNumberOfUshers()));
                 // init table
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
 
                 // create own agent
-                clientAgent = new ClientAgent(table.getFirstSeat(), table.getLastSeat());
+                clientAgent = new ClientAgent(table);
                 Remote stubAgent = UnicastRemoteObject.exportObject(clientAgent, 0);
                 registerAgent = (IRegister) Naming.lookup("//" + host + ":" + port + "/RegisterAgent");
                 registerAgent.register(stubAgent, String.format("ClientAgent%d", id));

@@ -33,12 +33,18 @@ public class Table
 
     private void initUshers(int seats, int ushers)
     {
-        int seatsPerUsher = seats / ushers;
-        int firstSeat = 0;
-        int lastSeat = 0;
+
         this.ushers = new Usher[ushers];
 
         // assign seats to manage
+        assignSeats(seats,ushers);
+    }
+
+    private void assignSeats(int seats, int ushers){
+        int seatsPerUsher = seats / ushers;
+        int firstSeat = 0;
+        int lastSeat = 0;
+
         for (int i = 0; i < this.ushers.length; i++)
         {
             lastSeat += seatsPerUsher - 1;
@@ -91,5 +97,48 @@ public class Table
         }
 
         return seats[seats.length - 1];
+    }
+
+    public void insertSeats(int countSeats, int afterSeat){
+        for(Usher usher : ushers){
+            usher.stopRunning();
+        }
+
+        boolean allSeatFree = false;
+        while(!allSeatFree)
+            for(Seat seat : seats){
+                allSeatFree |= seat.isAvailable();
+            }
+
+        System.out.println("All was stopped and all Seats are free");
+
+        Seat[] moreSeats = new Seat[seats.length + countSeats];
+
+        //copy all seats until to the seat where will be insert after new seats.
+        for(int i = 0; i <= afterSeat; i++){
+            moreSeats[i] = seats[i];
+        }
+
+        for(int i = (afterSeat+1); i < (afterSeat+1)+countSeats; i++){
+            moreSeats[i] = new Seat(i);
+            moreSeats[i].setId(i);
+        }
+
+        for(int i = afterSeat+1,j=0; i < seats.length; i++,j++){
+            moreSeats[(afterSeat+1+j)+countSeats] = seats[i];
+            moreSeats[(afterSeat+1)+countSeats+j].setId((afterSeat+1)+countSeats+j);
+        }
+
+
+
+        seats = moreSeats;
+
+        assignSeats(seats.length, ushers.length);
+
+        for(Usher usher: ushers){
+            usher.continueRunning();
+        }
+
+        System.out.println("All is running again");
     }
 }

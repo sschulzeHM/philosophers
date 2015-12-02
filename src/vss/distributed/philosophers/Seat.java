@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 public class Seat implements IRemoteSeat
 {
     private static final int REQUEST_MAX_COUNT = 3;
-    private final int id;
+    private int id;
     private IRemoteSeat leftNeighbor;
     private Fork rightFork;
     private boolean available;
@@ -62,6 +62,12 @@ public class Seat implements IRemoteSeat
     public int getId() throws RemoteException
     {
         return id;
+    }
+
+    public void setId(int id){
+        int newID = id;
+        System.out.println("Changed ID from " + this.id + " to " + newID);
+        this.id = id;
     }
 
     public boolean take(boolean releaseAnyway, String philName) throws RemoteException

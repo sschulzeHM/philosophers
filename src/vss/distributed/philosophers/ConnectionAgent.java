@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,7 @@ public class ConnectionAgent implements IConnectionAgent
     private final String host;
     private final int port;
     private int counterClientID;
+
     private HashMap<Integer,ISpecification> clientSpecs;
 
     public ConnectionAgent(Registry registry, String host, int port)
@@ -43,7 +45,7 @@ public class ConnectionAgent implements IConnectionAgent
     public synchronized int connect() throws RemoteException
     {
         counterClientID++;
-        clientSpecs.put(counterClientID, new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS + counterClientID - 1, counterClientID));
+        clientSpecs.put(counterClientID, new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS + (counterClientID - 1), counterClientID));
         Remote stubSpec = UnicastRemoteObject.exportObject(clientSpecs.get(counterClientID), 0);
         registry.rebind(String.format("Client%dSpec", counterClientID), stubSpec);
         Logger.getGlobal().log(Level.INFO, "Client " + counterClientID + " connected.");
@@ -70,5 +72,8 @@ public class ConnectionAgent implements IConnectionAgent
         return String.format("//%s:%d/ClientAgent%d", host, port, neighborID);
     }
 
+    public int getNumOfClients() {
+        return clientSpecs.size();
+    }
 
 }
