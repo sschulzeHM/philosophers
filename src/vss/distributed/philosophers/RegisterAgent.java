@@ -19,7 +19,7 @@ public class RegisterAgent implements IRegisterAgent
     {
         this.registry = registry;
         this.clientsAgents = new ArrayList<>();
-        startUpdateService();
+        //startUpdateService();
     }
 
     public void register(Remote registryObj, String name) throws RemoteException
@@ -40,8 +40,9 @@ public class RegisterAgent implements IRegisterAgent
         {
             public void run()
             {
+                boolean end = false;
                 int connectedClients = clientsAgents.size();
-                while (!interrupted())
+                while (!end)
                 {
                     if (clientsAgents.size() < 2)
                     {
@@ -67,6 +68,7 @@ public class RegisterAgent implements IRegisterAgent
                         {
                             Logger.getGlobal().log(Level.WARNING, "UpdateThread sleep interrupted.");
                         }
+
                         continue;
                     }
 
@@ -95,7 +97,9 @@ public class RegisterAgent implements IRegisterAgent
                             }
                         }
                     }
-                    connectedClients = clientsAgents.size();
+
+                    end = true;
+
                 }
             }
         }.start();

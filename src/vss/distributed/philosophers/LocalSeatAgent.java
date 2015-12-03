@@ -31,10 +31,7 @@ public class LocalSeatAgent extends Thread
             }
             catch (RemoteException e)
             {
-                while (table.stop())
-                {
-                }
-
+                table.stop();
                 try
                 {
                     table.getLastSeat().releaseRightFork();

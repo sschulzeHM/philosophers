@@ -19,7 +19,7 @@ public class ConnectionAgent implements IConnectionAgent
 {
     private static int AVAILABLE_SEATS = 3;
     private static int AVAILABLE_USHERS = 2;
-    private static int NUMBER_OF_PHILOSOPHERS = 3;
+    private static int NUMBER_OF_PHILOSOPHERS = 5;
     private static int NUMBER_OF_HUNGRY_PHILOSOPHERS = 1;
     private static int MAX_MEALS = 3;
 
@@ -78,7 +78,7 @@ public class ConnectionAgent implements IConnectionAgent
     {
         if (index >= clients.size())
         {
-            return "";
+            return null;
         }
         return clients.get(index);
     }
