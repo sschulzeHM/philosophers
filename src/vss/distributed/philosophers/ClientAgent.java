@@ -80,9 +80,9 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     public void insertSeats(boolean before, int countSeats, int seatID) throws RemoteException
     {
 
-            insertDone.set(false);
-            table.insertSeats(before, countSeats, seatID);
-            insertDone.set(true);
+        insertDone.set(false);
+        table.insertSeats(before, countSeats, seatID);
+        insertDone.set(true);
 
     }
 
