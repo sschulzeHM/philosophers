@@ -26,7 +26,7 @@ public class ServerSupervisor implements IRegisterAgent
         this.ip = ip;
         this.port = port;
         this.supervisors = new ArrayList<>();
-        startSupervising();
+       //startSupervising();
     }
 
     @Override

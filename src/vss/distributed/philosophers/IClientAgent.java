@@ -12,4 +12,6 @@ public interface IClientAgent extends Remote
     void insertSeats(boolean before, int countSeats, int seatID) throws RemoteException;
 
     boolean isAlive() throws RemoteException;
+
+    boolean isInsertSeatsDone() throws RemoteException;
 }
