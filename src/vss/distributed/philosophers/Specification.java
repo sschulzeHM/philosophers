@@ -8,16 +8,20 @@ import java.rmi.RemoteException;
 public class Specification implements ISpecification
 {
     private final String clientID;
-    private int numberOfPhilosophers;
-    private int numberOfUshers;
-    private int numberOfSeats;
+    private final int numberOfPhilosophers;
+    private final int numberOfUshers;
+    private final int numberOfSeats;
+    private final int numberOfHungryPhilosophers;
+    private final int maxMeals;
 
-    public Specification(int numberOfPhilosophers, int numberOfUshers, int numberOfSeats, String clientID)
+    public Specification(int numberOfPhilosophers, int numberOfUshers, int numberOfSeats, int numberOfHungryPhilosophers, String clientID, int maxMeals)
     {
         this.numberOfPhilosophers = numberOfPhilosophers;
         this.numberOfUshers = numberOfUshers;
         this.numberOfSeats = numberOfSeats;
+        this.numberOfHungryPhilosophers = numberOfHungryPhilosophers;
         this.clientID = clientID;
+        this.maxMeals = maxMeals;
     }
 
     @Override
@@ -26,9 +30,10 @@ public class Specification implements ISpecification
         return numberOfPhilosophers;
     }
 
-    public void setNumberOfPhilosophers(int numberOfPhilosophers)
+    @Override
+    public int getNumberOfHungryPhilosophers() throws RemoteException
     {
-        this.numberOfPhilosophers = numberOfPhilosophers;
+        return numberOfHungryPhilosophers;
     }
 
     @Override
@@ -37,22 +42,18 @@ public class Specification implements ISpecification
         return numberOfUshers;
     }
 
-    public void setNumberOfUshers(int numberOfUshers)
-    {
-        this.numberOfUshers = numberOfUshers;
-    }
-
     @Override
     public int getNumberOfSeats() throws RemoteException
     {
         return numberOfSeats;
     }
 
-    public void setNumberOfSeats(int numberOfSeats)
-    {
-        this.numberOfSeats = numberOfSeats;
-    }
-
     @Override
     public String getClientID() throws RemoteException { return clientID;}
+
+    @Override
+    public int getMaxMealDiff() throws RemoteException
+    {
+        return maxMeals;
+    }
 }

@@ -72,13 +72,14 @@ public class Client extends HostApplication
         Philosopher philosophers[];
         IRegisterAgent registerAgent;
         IClientAgent clientAgent;
+        ILocalSuperVisor supervisor;
         while (true)
         {
             try
             {
                 // get specification
                 spec = (ISpecification) Naming.lookup("//" + serverIP + ":" + serverPort + "/ClientSpec" + id);
-                Logger.getGlobal().log(Level.INFO, String.format("Client %s has to create Philosopher: %d,  Seats: %d, Ushers: %d", spec.getClientID(), spec.getNumberOfPhilosophers(), spec.getNumberOfSeats(), spec.getNumberOfUshers()));
+                Logger.getGlobal().log(Level.INFO, String.format("Client %s has to create Philosopher: %d,  Seats: %d, Ushers: %d, Hungry Philosophers: %d, Max Meal Difference: %d", spec.getClientID(), spec.getNumberOfPhilosophers(), spec.getNumberOfSeats(), spec.getNumberOfUshers(), spec.getNumberOfHungryPhilosophers(), spec.getMaxMealDiff()));
                 // init table
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
 
@@ -88,21 +89,31 @@ public class Client extends HostApplication
                 registerAgent = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/RegisterAgent");
                 registerAgent.register(stubAgent, String.format("ClientAgent%s", id));
 
-                IClientAgent myAgent = (IClientAgent) Naming.lookup("//" + serverIP + ":" + serverPort + String.format("/ClientAgent%s", id));
-
                 // create philosophers
-                philosophers = new Philosopher[spec.getNumberOfPhilosophers()];
+                philosophers = new Philosopher[spec.getNumberOfPhilosophers() + spec.getNumberOfHungryPhilosophers()];
                 for (int i = 0; i < philosophers.length; i++)
                 {
                     philosophers[i] = new Philosopher(table, i);
                 }
-                // TODO create hungry philosophers
+                for (int i = spec.getNumberOfPhilosophers(); i < philosophers.length; i++)
+                {
+                    philosophers[i] = new HungryPhilosopher(table, i);
+                }
+
+                // create supervisor
+                supervisor = new Supervisor(philosophers, spec.getMaxMealDiff());
+                Remote stubSupervisor = UnicastRemoteObject.exportObject(supervisor, 0);
 
                 // start philosophers
                 for (Philosopher phil : philosophers)
                 {
                     phil.start();
                 }
+
+                // start supervisor
+                Supervisor superman = (Supervisor) supervisor;
+                superman.start();
+
                 break;
             }
             catch (MalformedURLException e)

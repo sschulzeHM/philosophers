@@ -53,7 +53,7 @@ public class ConnectionAgent implements IConnectionAgent
             clients.add(id);
         }
 
-        ISpecification spec = new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS++, id);
+        ISpecification spec = new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS++, NUMBER_OF_HUNGRY_PHILOSOPHERS, id, MAX_MEALS);
         Remote stubSpec = UnicastRemoteObject.exportObject(spec, 0);
 
         registry.rebind(String.format("ClientSpec%s", id), stubSpec);
