@@ -23,7 +23,7 @@ public class ClientAgent implements IClientAgent, IRegisterObject
         this.table = table;
         this.connectionAgent = connectionAgent;
         this.clientID = clientID;
-        insertDone.set(false);
+        insertDone = new AtomicBoolean(false);
     }
 
     @Override
