@@ -87,11 +87,18 @@ public class Server extends HostApplication {
 
                     System.out.println("Soll vor oder nach einem Seat eingefuegt werden? Eingabe (v = davor, h = dahinter): ");
                     String c = scanner.next();
-                    while(c != "v" || c != "h"){
+                    boolean correctEntry = false;
+                    if(c.equalsIgnoreCase("v") || c.equalsIgnoreCase("h")){
+                        correctEntry = true;
+                    }
+                    while(!correctEntry){
                         Logger.getGlobal().log(Level.WARNING, "Eine ungueltiges Zeichen wurde eingegeben.");
                         System.out.println("Zeichen erneut eingeben (v = davor, h = dahinter): ");
                         c = scanner.next();
-                    };
+                        if(c.equalsIgnoreCase("v") || c.equalsIgnoreCase("h")){
+                            correctEntry = true;
+                        }
+                    }
 
 
                     if(c.equalsIgnoreCase("v")){

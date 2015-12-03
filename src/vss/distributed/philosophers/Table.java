@@ -141,15 +141,15 @@ public class Table
             for (int i = 0; i <= seatID; i++) {
                 moreSeats[i] = seats[i];
             }
-
-            for (int i = (seatID + 1); i < (seatID + 1) + countSeats; i++) {
+            seatID++;
+            for (int i = seatID; i < seatID + countSeats; i++) {
                 moreSeats[i] = new Seat(i);
                 moreSeats[i].initialize(moreSeats[i - 1], new Fork(true, i));
             }
 
-            for (int i = seatID + 1; i < seats.length; i++) {
+            for (int i = seatID; i < seats.length; i++) {
                 moreSeats[i + countSeats] = seats[i];
-                moreSeats[i + countSeats].changeID(i + countSeats);
+                moreSeats[i + countSeats].changeID((i + countSeats)%moreSeats.length);
             }
         seats = moreSeats;
 
