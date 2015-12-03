@@ -17,10 +17,10 @@ import java.util.logging.Logger;
  */
 public class ConnectionAgent implements IConnectionAgent
 {
-    private static int AVAILABLE_SEATS = 3;
+    private static int AVAILABLE_SEATS = 5;
     private static int AVAILABLE_USHERS = 2;
-    private static int NUMBER_OF_PHILOSOPHERS = 3;
-    private static int NUMBER_OF_HUNGRY_PHILOSOPHERS = 1;
+    private static int NUMBER_OF_PHILOSOPHERS = 6;
+    private static int NUMBER_OF_HUNGRY_PHILOSOPHERS = 2;
     private static int MAX_MEALS = 3;
 
     private final Registry registry;
@@ -94,7 +94,7 @@ public class ConnectionAgent implements IConnectionAgent
             address = "//" + host + ":" + port + String.format("/ClientAgent%s", clientID);
             try
             {
-                Logger.getGlobal().log(Level.INFO, "Trying " + clientID + " at " + address);
+                //Logger.getGlobal().log(Level.INFO, "Trying " + clientID + " at " + address);
                 neighborAgent = (IClientAgent) Naming.lookup(address);
             }
             catch (NotBoundException e)

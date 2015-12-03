@@ -101,22 +101,24 @@ public class Table
         return seats[seats.length - 1];
     }
 
-    public boolean stop()
+    public void stop()
     {
         for (Usher usher : ushers)
         {
             usher.stopRunning();
         }
 
-        boolean allSeatFree = false;
-        while (!allSeatFree)
+        boolean allSeatFree;
+        do
         {
+            allSeatFree = true;
             for (Seat seat : seats)
             {
-                allSeatFree |= seat.isAvailable();
+                allSeatFree &= seat.isAvailable();
             }
+
         }
-        return true;
+        while (!allSeatFree);
     }
 
     public void continueRunning()

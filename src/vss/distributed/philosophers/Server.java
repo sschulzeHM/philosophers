@@ -48,6 +48,10 @@ public class Server extends HostApplication {
         Remote stubConnectionAgent = UnicastRemoteObject.exportObject(connectionAgent, port);
         registry.rebind("ConnectionAgent", stubConnectionAgent);
 
+        IRegisterAgent serverSupervisor = new ServerSupervisor(registry, ip, port);
+        Remote stubServerSupervisor = UnicastRemoteObject.exportObject(serverSupervisor, port);
+        registry.rebind("ServerSupervisor", stubServerSupervisor);
+
         remoteLogger.logInfo("Server online...");
 
         Scanner scanner = new Scanner(System.in);

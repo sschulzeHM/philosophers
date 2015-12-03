@@ -73,6 +73,7 @@ public class Client extends HostApplication
         IRegisterAgent registerAgent;
         IClientAgent clientAgent;
         ILocalSuperVisor supervisor;
+        IRegisterAgent serverSupervisor;
         while (true)
         {
             try
@@ -103,6 +104,10 @@ public class Client extends HostApplication
                 // create supervisor
                 supervisor = new Supervisor(philosophers, spec.getMaxMealDiff());
                 Remote stubSupervisor = UnicastRemoteObject.exportObject(supervisor, 0);
+
+                // register supervisor at ServerSupervisor
+                serverSupervisor = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ServerSupervisor");
+                serverSupervisor.register(stubSupervisor, String.format("Supervisor%s", id));
 
                 // start philosophers
                 for (Philosopher phil : philosophers)

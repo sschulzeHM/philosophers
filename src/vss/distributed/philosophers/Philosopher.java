@@ -12,9 +12,9 @@ public class Philosopher extends Thread
 {
     private final Table table;
     private final int id;
-    public double EATTIME = 1000;
-    public double THINKTIME = 2500;
-    public double SLEEPTIME = 5000;
+    public double EATTIME = 2000;
+    public double THINKTIME = 4000;
+    public double SLEEPTIME = 6000;
     public int MAX_TRIES = 3;
     private int mealcounter;
     private boolean canEat;
@@ -172,7 +172,7 @@ public class Philosopher extends Thread
 
     protected String getOwnName()
     {
-        return String.format("Philosoph %d", id);
+        return String.format("Philosopher %d", id);
     }
 
     public void setCanEat(boolean canEat)

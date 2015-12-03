@@ -38,22 +38,23 @@ public class Supervisor extends Thread implements ILocalSuperVisor
 
             if (globalMin < min)
             {
+                Logger.getGlobal().log(Level.WARNING, String.format("Local min %d exceeds global min %d! ", min, globalMin));
                 min = globalMin;
             }
 
             // set canEat on all philosophers
-            Logger.getGlobal().log(Level.INFO, "Current Min Meals: " + min + ".");
+            Logger.getGlobal().log(Level.INFO, String.format("Current Min Meals: %d.", min));
             for (Philosopher phil : philosophers)
             {
                 if (phil.getMeals() >= min + MAX_MEALS)
                 {
                     phil.setCanEat(false);
-                    phil.restrictNeeds();
+                    //phil.restrictNeeds();
                 }
                 else
                 {
                     phil.setCanEat(true);
-                    phil.allowNeeds();
+                    //phil.allowNeeds();
                 }
             }
 
@@ -72,6 +73,7 @@ public class Supervisor extends Thread implements ILocalSuperVisor
     @Override
     public void setGlobalMin(int min) throws RemoteException
     {
+        //Logger.getGlobal().log(Level.INFO, String.format("New global min from ServerSupervisor: %d.", min));
         this.globalMin = min;
     }
 
