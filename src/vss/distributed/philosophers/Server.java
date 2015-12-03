@@ -48,6 +48,10 @@ public class Server extends HostApplication {
         Remote stubConnectionAgent = UnicastRemoteObject.exportObject(connectionAgent, port);
         registry.rebind("ConnectionAgent", stubConnectionAgent);
 
+        IRegisterAgent serverSupervisor = new ServerSupervisor(registry, ip, port);
+        Remote stubServerSupervisor = UnicastRemoteObject.exportObject(serverSupervisor, port);
+        registry.rebind("ServerSupervisor", stubServerSupervisor);
+
         remoteLogger.logInfo("Server online...");
 
         Scanner scanner = new Scanner(System.in);
@@ -71,17 +75,17 @@ public class Server extends HostApplication {
                     inputSeatCount = scanner.nextInt();
                     while (inputSeatCount <= 0)
                     {
-                        Logger.getGlobal().log(Level.WARNING,"Die Anzahl der Seats muss groesser 0 sein.");
+                        Logger.getGlobal().log(Level.WARNING, "Die Anzahl der Seats muss groesser 0 sein.");
                         System.out.println("Anzahl erneut eingeben:  ");
                         inputSeatCount = scanner.nextInt();
                     }
 
-                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients-1)));
+                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients - 1)));
                     inputClientNumber = scanner.nextInt();
                     while (inputClientNumber >= numOfClients || inputClientNumber < 0)
                     {
                         Logger.getGlobal().log(Level.WARNING, "Eine ungueltige ClientID wurde eingegeben.");
-                        System.out.println(String.format("ClientID erneut eingeben (Range: 0 - %d): ", (numOfClients-1)));
+                        System.out.println(String.format("ClientID erneut eingeben (Range: 0 - %d): ", (numOfClients - 1)));
                         inputClientNumber = scanner.nextInt();
                     }
 

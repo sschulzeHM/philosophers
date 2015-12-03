@@ -19,7 +19,7 @@ public class RegisterAgent implements IRegisterAgent
     {
         this.registry = registry;
         this.clientsAgents = new ArrayList<>();
-        //startUpdateService();
+        startUpdateService();
     }
 
     public void register(Remote registryObj, String name) throws RemoteException
@@ -46,7 +46,7 @@ public class RegisterAgent implements IRegisterAgent
                 {
                     if (clientsAgents.size() < 2)
                     {
-                        Logger.getGlobal().log(Level.INFO, String.format("UpdateService: Less than two clients. %d connected clients of %d.", connectedClients, clientsAgents.size()));
+                        //Logger.getGlobal().log(Level.INFO, String.format("UpdateService: Less than two clients. %d connected clients of %d.", connectedClients, clientsAgents.size()));
                         try
                         {
                             sleep(5000);
@@ -59,7 +59,7 @@ public class RegisterAgent implements IRegisterAgent
                     }
                     else if (connectedClients == clientsAgents.size())
                     {
-                        Logger.getGlobal().log(Level.INFO, String.format("UpdateService: Nothing changed. %d connected clients of %d.", connectedClients, clientsAgents.size()));
+                        //Logger.getGlobal().log(Level.INFO, String.format("UpdateService: Nothing changed. %d connected clients of %d.", connectedClients, clientsAgents.size()));
                         try
                         {
                             sleep(5000);

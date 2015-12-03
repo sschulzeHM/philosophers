@@ -17,10 +17,10 @@ import java.util.logging.Logger;
  */
 public class ConnectionAgent implements IConnectionAgent
 {
-    private static int AVAILABLE_SEATS = 3;
+    private static int AVAILABLE_SEATS = 5;
     private static int AVAILABLE_USHERS = 2;
-    private static int NUMBER_OF_PHILOSOPHERS = 5;
-    private static int NUMBER_OF_HUNGRY_PHILOSOPHERS = 1;
+    private static int NUMBER_OF_PHILOSOPHERS = 6;
+    private static int NUMBER_OF_HUNGRY_PHILOSOPHERS = 2;
     private static int MAX_MEALS = 3;
 
     private final Registry registry;
@@ -53,7 +53,7 @@ public class ConnectionAgent implements IConnectionAgent
             clients.add(id);
         }
 
-        ISpecification spec = new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS++, id);
+        ISpecification spec = new Specification(NUMBER_OF_PHILOSOPHERS, AVAILABLE_USHERS, AVAILABLE_SEATS++, NUMBER_OF_HUNGRY_PHILOSOPHERS, id, MAX_MEALS);
         Remote stubSpec = UnicastRemoteObject.exportObject(spec, 0);
 
         registry.rebind(String.format("ClientSpec%s", id), stubSpec);
@@ -94,24 +94,24 @@ public class ConnectionAgent implements IConnectionAgent
             address = "//" + host + ":" + port + String.format("/ClientAgent%s", clientID);
             try
             {
-                Logger.getGlobal().log(Level.INFO, "Trying " + clientID + " at " + address);
+                //Logger.getGlobal().log(Level.INFO, "Trying " + clientID + " at " + address);
                 neighborAgent = (IClientAgent) Naming.lookup(address);
             }
             catch (NotBoundException e)
             {
-                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                Logger.getGlobal().log(Level.WARNING, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
                 iterator.remove();
                 continue;
             }
             catch (MalformedURLException e)
             {
-                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                Logger.getGlobal().log(Level.WARNING, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
                 iterator.remove();
                 continue;
             }
             catch (RemoteException e)
             {
-                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                Logger.getGlobal().log(Level.WARNING, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
                 iterator.remove();
                 continue;
             }

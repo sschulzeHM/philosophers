@@ -64,7 +64,8 @@ public class Seat implements IRemoteSeat
         return id;
     }
 
-    public void changeID(int id){
+    public void changeID(int id)
+    {
         rightFork.changeID(id);
         this.id = id;
     }
@@ -140,7 +141,8 @@ public class Seat implements IRemoteSeat
         successOtherFork = false;
     }
 
-    public void changeLeftNeighbor(Seat leftNeighbor){
+    public void changeLeftNeighbor(Seat leftNeighbor)
+    {
         this.leftNeighbor = leftNeighbor;
     }
 }

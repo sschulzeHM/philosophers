@@ -44,7 +44,8 @@ public class Fork
         return true;
     }
 
-    public void changeID(int id){
+    public void changeID(int id)
+    {
         this.id = id;
     }
 
