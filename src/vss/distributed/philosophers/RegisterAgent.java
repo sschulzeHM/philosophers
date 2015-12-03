@@ -19,7 +19,7 @@ public class RegisterAgent implements IRegisterAgent
     {
         this.registry = registry;
         this.clientsAgents = new ArrayList<>();
-        //startUpdateService();
+        startUpdateService();
     }
 
     public void register(Remote registryObj, String name) throws RemoteException

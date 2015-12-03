@@ -99,19 +99,19 @@ public class ConnectionAgent implements IConnectionAgent
             }
             catch (NotBoundException e)
             {
-                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                Logger.getGlobal().log(Level.WARNING, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
                 iterator.remove();
                 continue;
             }
             catch (MalformedURLException e)
             {
-                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                Logger.getGlobal().log(Level.WARNING, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
                 iterator.remove();
                 continue;
             }
             catch (RemoteException e)
             {
-                Logger.getGlobal().log(Level.INFO, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
+                Logger.getGlobal().log(Level.WARNING, "Client " + clientID + " disconnected. Available clients: " + getNumOfClients());
                 iterator.remove();
                 continue;
             }

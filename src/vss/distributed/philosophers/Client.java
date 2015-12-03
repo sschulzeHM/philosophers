@@ -25,14 +25,14 @@ public class Client extends HostApplication
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(formatter);
         Logger.getGlobal().addHandler(consoleHandler);
-        //Logger.getGlobal().setLevel(Level.OFF);
+        Logger.getGlobal().setLevel(Level.WARNING);
 
         String myIP = getHostFromArgs(args, 2);
         int myPort = getPortFromArgs(args, 3);
 
         String serverIP = getHostFromArgs(args, 0);
         int serverPort = getPortFromArgs(args, 1);
-        Logger.getGlobal().log(Level.INFO, "Client running. Connecting to " + serverIP + ":" + serverPort);
+        Logger.getGlobal().log(Level.WARNING, "Client running on " + myIP + ":" + myPort + ". Connecting to " + serverIP + ":" + serverPort);
 
         IConnectionAgent connectionAgent;
         String id;
@@ -80,15 +80,9 @@ public class Client extends HostApplication
             {
                 // get specification
                 spec = (ISpecification) Naming.lookup("//" + serverIP + ":" + serverPort + "/ClientSpec" + id);
-                Logger.getGlobal().log(Level.INFO, String.format("Client %s has to create Philosopher: %d,  Seats: %d, Ushers: %d, Hungry Philosophers: %d, Max Meal Difference: %d", spec.getClientID(), spec.getNumberOfPhilosophers(), spec.getNumberOfSeats(), spec.getNumberOfUshers(), spec.getNumberOfHungryPhilosophers(), spec.getMaxMealDiff()));
+                Logger.getGlobal().log(Level.WARNING, String.format("Client %s has to create Philosopher: %d,  Seats: %d, Ushers: %d, Hungry Philosophers: %d, Max Meal Difference: %d", spec.getClientID(), spec.getNumberOfPhilosophers(), spec.getNumberOfSeats(), spec.getNumberOfUshers(), spec.getNumberOfHungryPhilosophers(), spec.getMaxMealDiff()));
                 // init table
                 table = new Table(spec.getNumberOfSeats(), spec.getNumberOfUshers());
-
-                // create own agent
-                clientAgent = new ClientAgent(table, connectionAgent, id);
-                Remote stubAgent = UnicastRemoteObject.exportObject(clientAgent, 0);
-                registerAgent = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/RegisterAgent");
-                registerAgent.register(stubAgent, String.format("ClientAgent%s", id));
 
                 // create philosophers
                 philosophers = new Philosopher[spec.getNumberOfPhilosophers() + spec.getNumberOfHungryPhilosophers()];
@@ -103,9 +97,16 @@ public class Client extends HostApplication
 
                 // create supervisor
                 supervisor = new Supervisor(philosophers, spec.getMaxMealDiff());
-                Remote stubSupervisor = UnicastRemoteObject.exportObject(supervisor, 0);
+
+
+                // create and register own agent
+                clientAgent = new ClientAgent(table, connectionAgent, id);
+                Remote stubAgent = UnicastRemoteObject.exportObject(clientAgent, 0);
+                registerAgent = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/RegisterAgent");
+                registerAgent.register(stubAgent, String.format("ClientAgent%s", id));
 
                 // register supervisor at ServerSupervisor
+                Remote stubSupervisor = UnicastRemoteObject.exportObject(supervisor, 0);
                 serverSupervisor = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ServerSupervisor");
                 serverSupervisor.register(stubSupervisor, String.format("Supervisor%s", id));
 
@@ -118,6 +119,7 @@ public class Client extends HostApplication
                 // start supervisor
                 Supervisor superman = (Supervisor) supervisor;
                 superman.start();
+
 
                 break;
             }
@@ -132,6 +134,10 @@ public class Client extends HostApplication
             catch (ConnectException e)
             {
                 Logger.getGlobal().log(Level.WARNING, "Server spec not available. Trying again in " + WAIT_TIME / 1000 + " seconds.");
+            }
+            catch (RemoteException e)
+            {
+                Logger.getGlobal().log(Level.WARNING, "Server not available. Trying again in " + WAIT_TIME / 1000 + " seconds.");
             }
             try
             {

@@ -127,7 +127,7 @@ public class Philosopher extends Thread
 
     private void eat(int philosopherID, int seatID)
     {
-        Logger.getGlobal().log(Level.INFO, getOwnName() + " eats at seat " + seatID + "." + " Meal: " + (mealcounter + 1));
+        Logger.getGlobal().log(Level.WARNING, getOwnName() + " eats at seat " + seatID + "." + " Meal: " + (mealcounter + 1));
         try
         {
             sleep((int) (EATTIME));

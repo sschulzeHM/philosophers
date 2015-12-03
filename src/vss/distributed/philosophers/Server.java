@@ -75,33 +75,38 @@ public class Server extends HostApplication {
                     inputSeatCount = scanner.nextInt();
                     while (inputSeatCount <= 0)
                     {
-                        Logger.getGlobal().log(Level.WARNING,"Die Anzahl der Seats muss groesser 0 sein.");
+                        Logger.getGlobal().log(Level.WARNING, "Die Anzahl der Seats muss groesser 0 sein.");
                         System.out.println("Anzahl erneut eingeben:  ");
                         inputSeatCount = scanner.nextInt();
                     }
 
-                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients-1)));
+                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients - 1)));
                     inputClientNumber = scanner.nextInt();
                     while (inputClientNumber >= numOfClients || inputClientNumber < 0)
                     {
                         Logger.getGlobal().log(Level.WARNING, "Eine ungueltige ClientID wurde eingegeben.");
-                        System.out.println(String.format("ClientID erneut eingeben (Range: 0 - %d): ", (numOfClients-1)));
+                        System.out.println(String.format("ClientID erneut eingeben (Range: 0 - %d): ", (numOfClients - 1)));
                         inputClientNumber = scanner.nextInt();
                     }
 
                     System.out.println("Soll vor oder nach einem Seat eingefuegt werden? Eingabe (v = davor, h = dahinter): ");
                     String c = scanner.next();
-                    while(c != "v" || c != "h"){
+                    while (c != "v" || c != "h")
+                    {
                         Logger.getGlobal().log(Level.WARNING, "Eine ungueltiges Zeichen wurde eingegeben.");
                         System.out.println("Zeichen erneut eingeben (v = davor, h = dahinter): ");
                         c = scanner.next();
-                    };
+                    }
+                    ;
 
 
-                    if(c.equalsIgnoreCase("v")){
+                    if (c.equalsIgnoreCase("v"))
+                    {
                         System.out.println("SeatID eingeben vor der eingefuegt werden soll. Eingabe: ");
                         before = true;
-                    }else{
+                    }
+                    else
+                    {
                         System.out.println("SeatID eingeben nach der eingefuegt werden soll. Eingabe: ");
                         before = false;
                     }
@@ -110,7 +115,7 @@ public class Server extends HostApplication {
 
                     while (inputSeatID < 0)
                     {
-                        Logger.getGlobal().log(Level.WARNING,"Die SeatID muss groesser oder gleich 0 sein.");
+                        Logger.getGlobal().log(Level.WARNING, "Die SeatID muss groesser oder gleich 0 sein.");
                         System.out.println("SeatID erneut eingeben: ");
                         inputSeatID = scanner.nextInt();
                     }
@@ -132,7 +137,7 @@ public class Server extends HostApplication {
                             }
                             try
                             {
-                                clientAgent.insertSeats(before,inputSeatCount, inputSeatID);
+                                clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
                             }
                             catch (ConnectException e)
                             {

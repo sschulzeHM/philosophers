@@ -66,8 +66,9 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     }
 
     @Override
-    public void insertSeats(boolean before, int countSeats, int seatID) throws RemoteException {
-        table.insertSeats(before,countSeats, seatID);
+    public void insertSeats(boolean before, int countSeats, int seatID) throws RemoteException
+    {
+        table.insertSeats(before, countSeats, seatID);
     }
 
     @Override

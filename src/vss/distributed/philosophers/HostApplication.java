@@ -10,7 +10,7 @@ public class HostApplication extends Thread
     public static int getPortFromArgs(String[] args, int index)
     {
         int port = 0;
-        if (args.length < 1)
+        if (args.length < (index - 1))
         {
             port = Registry.REGISTRY_PORT;
         }
@@ -35,7 +35,7 @@ public class HostApplication extends Thread
     public static String getHostFromArgs(String[] args, int index)
     {
         String host = "localhost";
-        if (args.length > 1)
+        if (args.length > (index - 1))
         {
             host = args[index];
         }

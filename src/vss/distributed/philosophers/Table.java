@@ -116,7 +116,7 @@ public class Table
             {
                 allSeatFree &= seat.isAvailable();
             }
-        }while(!allSeatFree);
+        } while (!allSeatFree);
     }
 
     public void continueRunning()
@@ -127,30 +127,35 @@ public class Table
         }
     }
 
-    public void insertSeats(boolean before, int countSeats, int seatID){
+    public void insertSeats(boolean before, int countSeats, int seatID)
+    {
         stop();
 
         Logger.getGlobal().log(Level.INFO, "Everything was stopped and all Seats are free");
 
         Seat[] moreSeats = new Seat[seats.length + countSeats];
 
-        if(before) {
-           seatID--;
+        if (before)
+        {
+            seatID--;
         }
-            //copy all seats until to the seat where will be insert after new seats.
-            for (int i = 0; i <= seatID; i++) {
-                moreSeats[i] = seats[i];
-            }
+        //copy all seats until to the seat where will be insert after new seats.
+        for (int i = 0; i <= seatID; i++)
+        {
+            moreSeats[i] = seats[i];
+        }
 
-            for (int i = (seatID + 1); i < (seatID + 1) + countSeats; i++) {
-                moreSeats[i] = new Seat(i);
-                moreSeats[i].initialize(moreSeats[i - 1], new Fork(true, i));
-            }
+        for (int i = (seatID + 1); i < (seatID + 1) + countSeats; i++)
+        {
+            moreSeats[i] = new Seat(i);
+            moreSeats[i].initialize(moreSeats[i - 1], new Fork(true, i));
+        }
 
-            for (int i = seatID + 1; i < seats.length; i++) {
-                moreSeats[i + countSeats] = seats[i];
-                moreSeats[i + countSeats].changeID(i + countSeats);
-            }
+        for (int i = seatID + 1; i < seats.length; i++)
+        {
+            moreSeats[i + countSeats] = seats[i];
+            moreSeats[i + countSeats].changeID(i + countSeats);
+        }
         seats = moreSeats;
 
         assignSeats(seats.length, ushers.length);

@@ -26,14 +26,23 @@ public class ServerSupervisor implements IRegisterAgent
         this.ip = ip;
         this.port = port;
         this.supervisors = new ArrayList<>();
+        startSupervising();
     }
 
     @Override
     public void register(Remote registerObj, String name) throws RemoteException
     {
         Logger.getGlobal().log(Level.INFO, String.format("Register Supervisor: %s.", name));
-        supervisors.add(name);
+        addSupervisor(name);
         registry.rebind(name, registerObj);
+    }
+
+    public void addSupervisor(String name)
+    {
+        synchronized (supervisors)
+        {
+            supervisors.add(name);
+        }
     }
 
     public void startSupervising()
@@ -44,48 +53,53 @@ public class ServerSupervisor implements IRegisterAgent
             {
                 while (true)
                 {
-
                     int globalMin = Integer.MAX_VALUE;
                     int localMin = 0;
                     ILocalSuperVisor supervisor;
 
-                    // calculate current global min from local min
-                    for (String supID : supervisors)
+                    synchronized (supervisors)
                     {
-                        try
+                        // calculate current global min from local min
+                        for (String supID : supervisors)
                         {
-                            supervisor = (ILocalSuperVisor) registry.lookup(supID);
-                            localMin = supervisor.getLocalMin();
-                            if (localMin < globalMin)
+                            try
                             {
-                                globalMin = localMin;
+                                supervisor = (ILocalSuperVisor) registry.lookup(supID);
+                                localMin = supervisor.getLocalMin();
+                                if (localMin < globalMin)
+                                {
+                                    globalMin = localMin;
+                                }
                             }
-                        }
-                        catch (RemoteException e)
-                        {
-                            Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s could not be found.", supID));
-                        }
-                        catch (NotBoundException e)
-                        {
-                            Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s is not bound.", supID));
+                            catch (RemoteException e)
+                            {
+                                Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s could not be found.", supID));
+                            }
+                            catch (NotBoundException e)
+                            {
+                                Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s is not bound.", supID));
+                            }
                         }
                     }
 
-                    // update global min in registered supervisors
-                    for (String supID : supervisors)
+                    synchronized (supervisors)
                     {
-                        try
+                        // update global min in registered supervisors
+                        for (String supID : supervisors)
                         {
-                            supervisor = (ILocalSuperVisor) registry.lookup(supID);
-                            supervisor.setGlobalMin(globalMin);
-                        }
-                        catch (RemoteException e)
-                        {
-                            Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s could not be found.", supID));
-                        }
-                        catch (NotBoundException e)
-                        {
-                            Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s is not bound.", supID));
+                            try
+                            {
+                                supervisor = (ILocalSuperVisor) registry.lookup(supID);
+                                supervisor.setGlobalMin(globalMin);
+                            }
+                            catch (RemoteException e)
+                            {
+                                Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s could not be found.", supID));
+                            }
+                            catch (NotBoundException e)
+                            {
+                                Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s is not bound.", supID));
+                            }
                         }
                     }
 
