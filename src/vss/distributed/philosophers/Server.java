@@ -57,11 +57,12 @@ public class Server extends HostApplication {
         Scanner scanner = new Scanner(System.in);
         int inputSeatCount = 0;
         int inputClientNumber = 0;
-        int inputAfterSeatID = 0;
+        int inputSeatID = 0;
         IClientAgent clientAgent;
         List<String> clients;
         int numOfClients = 0;
-
+        boolean before;
+        String clientID;
         // accept input for insertion at clients
         while (!interrupted()) {
             try
@@ -74,31 +75,51 @@ public class Server extends HostApplication {
                     inputSeatCount = scanner.nextInt();
                     while (inputSeatCount <= 0)
                     {
-                        System.out.println("Die Anzahl der Seats muss groesser 0 sein. Erneut Anzahl eingeben:  ");
+                        Logger.getGlobal().log(Level.WARNING,"Die Anzahl der Seats muss groesser 0 sein.");
+                        System.out.println("Anzahl erneut eingeben:  ");
                         inputSeatCount = scanner.nextInt();
                     }
 
-                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? Client# eingeben (Range: 0 - %d): ", (numOfClients)));
+                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients-1)));
                     inputClientNumber = scanner.nextInt();
-                    while (inputClientNumber > numOfClients || inputClientNumber < 0)
+                    while (inputClientNumber >= numOfClients || inputClientNumber < 0)
                     {
-                        Logger.getGlobal().log(Level.INFO, String.format("Eine ungueltige Client# wurde eingegeben. Client# erneut eingeben (Range: 0 - %d): ", (numOfClients)));
+                        Logger.getGlobal().log(Level.WARNING, "Eine ungueltige ClientID wurde eingegeben.");
+                        System.out.println(String.format("ClientID erneut eingeben (Range: 0 - %d): ", (numOfClients-1)));
                         inputClientNumber = scanner.nextInt();
                     }
 
-                    System.out.println("Nach welchem Seat soll eingefuegt werden? SeatID eingeben: ");
-                    inputAfterSeatID = scanner.nextInt();
-                    while (inputAfterSeatID < 0)
+                    System.out.println("Soll vor oder nach einem Seat eingefuegt werden? Eingabe (v = davor, h = dahinter): ");
+                    String c = scanner.next();
+                    while(c != "v" || c != "h"){
+                        Logger.getGlobal().log(Level.WARNING, "Eine ungueltiges Zeichen wurde eingegeben.");
+                        System.out.println("Zeichen erneut eingeben (v = davor, h = dahinter): ");
+                        c = scanner.next();
+                    };
+
+
+                    if(c.equalsIgnoreCase("v")){
+                        System.out.println("SeatID eingeben vor der eingefuegt werden soll. Eingabe: ");
+                        before = true;
+                    }else{
+                        System.out.println("SeatID eingeben nach der eingefuegt werden soll. Eingabe: ");
+                        before = false;
+                    }
+
+                    inputSeatID = scanner.nextInt();
+
+                    while (inputSeatID < 0)
                     {
-                        System.out.println("Die SeatID muss groesser oder gleich 0 sein. SeatID erneut eingeben: ");
-                        inputAfterSeatID = scanner.nextInt();
+                        Logger.getGlobal().log(Level.WARNING,"Die SeatID muss groesser oder gleich 0 sein.");
+                        System.out.println("SeatID erneut eingeben: ");
+                        inputSeatID = scanner.nextInt();
                     }
 
                     clients = ((RegisterAgent) registerAgent).getClientAgents();
                     for (String client : clients)
                     {
-                        String clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
-                        if (client.contains(clientID))
+                        clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
+                        if (clientID != null && client.contains(clientID))
                         {
                             try
                             {
@@ -111,7 +132,7 @@ public class Server extends HostApplication {
                             }
                             try
                             {
-                                clientAgent.insertSeats(inputSeatCount, inputAfterSeatID);
+                                clientAgent.insertSeats(before,inputSeatCount, inputSeatID);
                             }
                             catch (ConnectException e)
                             {

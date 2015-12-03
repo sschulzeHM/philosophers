@@ -78,7 +78,7 @@ public class ConnectionAgent implements IConnectionAgent
     {
         if (index >= clients.size())
         {
-            return "";
+            return null;
         }
         return clients.get(index);
     }

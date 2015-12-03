@@ -5,7 +5,7 @@ package vss.distributed.philosophers;
  */
 public class Fork
 {
-    private final int id;
+    private int id;
     private boolean available;
 
     public Fork(boolean available, int id)
@@ -42,6 +42,10 @@ public class Fork
         }
         setUnavailable();
         return true;
+    }
+
+    public void changeID(int id){
+        this.id = id;
     }
 
 }
