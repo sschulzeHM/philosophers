@@ -11,13 +11,13 @@ public class Usher {
     public static final int SEAT_UNAVAILABLE = -1;
 
     private final int id;
-    private final Seat[] seats;
+
+    private Seat[] seats;
     private Seat nullSeat;
     private boolean running;
 
-    public Usher(int id, Seat[] seats) {
+    public Usher(int id) {
         this.id = id;
-        this.seats = seats;
         this.running = true;
     }
 
@@ -69,5 +69,9 @@ public class Usher {
     public synchronized void continueRunning(){
         running = true;
         notifyAll();
+    }
+
+    public void setSeats(Seat[] seats) {
+        this.seats = seats;
     }
 }

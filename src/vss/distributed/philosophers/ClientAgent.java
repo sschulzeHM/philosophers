@@ -6,6 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,12 +16,14 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     private final String clientID;
     private Table table;
     private LocalSeatAgent agent;
+    private AtomicBoolean insertDone;
 
     public ClientAgent(Table table, IConnectionAgent connectionAgent, String clientID)
     {
         this.table = table;
         this.connectionAgent = connectionAgent;
         this.clientID = clientID;
+        insertDone.set(false);
     }
 
     @Override
@@ -68,7 +71,16 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     @Override
     public void insertSeats(boolean before, int countSeats, int seatID) throws RemoteException
     {
-        table.insertSeats(before, countSeats, seatID);
+
+            insertDone.set(false);
+            table.insertSeats(before, countSeats, seatID);
+            insertDone.set(true);
+
+    }
+
+    public boolean isInsertSeatsDone() throws RemoteException
+    {
+        return insertDone.get();
     }
 
     @Override
