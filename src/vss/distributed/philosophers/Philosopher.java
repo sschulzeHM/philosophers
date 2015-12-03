@@ -39,7 +39,7 @@ public class Philosopher extends Thread
                 think();
                 if (!canEat)
                 {
-                    Logger.getGlobal().log(Level.INFO, getOwnName() + " can't eat. Meals " + mealcounter);
+                    Logger.getGlobal().log(Level.WARNING, getOwnName() + " can't eat. Meals " + mealcounter);
                     break;
                 }
                 usher = table.getUsher();

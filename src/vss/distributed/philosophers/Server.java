@@ -35,6 +35,8 @@ public class Server extends HostApplication {
         LocateRegistry.createRegistry(port);
         Registry registry = LocateRegistry.getRegistry();
 
+        System.setProperty("java.rmi.server.hostname", ip);
+
         // create remote objects
         IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
         Remote stubLogger = UnicastRemoteObject.exportObject(remoteLogger, port);
