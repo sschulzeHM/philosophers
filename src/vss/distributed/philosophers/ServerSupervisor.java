@@ -41,7 +41,11 @@ public class ServerSupervisor implements IRegisterAgent
     {
         synchronized (supervisors)
         {
-            supervisors.add(name);
+            int i = supervisors.indexOf(name);
+            if (i == -1)
+            {
+                supervisors.add(name);
+            }
         }
     }
 

@@ -26,12 +26,11 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     @Override
     public void setRemoteSeat(IRemoteSeat remote) throws RemoteException
     {
-
         // stop local table
         table.stop();
 
         table.getFirstSeat().setLeftNeighbor(remote);
-        Logger.getGlobal().log(Level.INFO, String.format("Client %s setting remote seat %d", clientID, remote.getId()));
+        Logger.getGlobal().log(Level.WARNING, String.format("Client %s setting remote seat %d", clientID, remote.getId()));
         table.continueRunning();
         agent = new LocalSeatAgent(table, remote);
         agent.start();

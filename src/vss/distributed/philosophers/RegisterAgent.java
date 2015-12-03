@@ -25,8 +25,28 @@ public class RegisterAgent implements IRegisterAgent
     public void register(Remote registryObj, String name) throws RemoteException
     {
         Logger.getGlobal().log(Level.INFO, String.format("Register: %s.", name));
-        clientsAgents.add(name);
+        addClientAgent(name);
         registry.rebind(name, registryObj);
+    }
+
+    public void addClientAgent(String name)
+    {
+        synchronized (clientsAgents)
+        {
+            int i = clientsAgents.indexOf(name);
+            if (i == -1)
+            {
+                clientsAgents.add(name);
+            }
+        }
+    }
+
+    public int getClientAgentsSize()
+    {
+        synchronized (clientsAgents)
+        {
+            return clientsAgents.size();
+        }
     }
 
     public List<String> getClientAgents()
@@ -41,10 +61,10 @@ public class RegisterAgent implements IRegisterAgent
             public void run()
             {
                 boolean end = false;
-                int connectedClients = clientsAgents.size();
-                while (!end)
+                int connectedClients = getClientAgentsSize();
+                while (true)
                 {
-                    if (clientsAgents.size() < 2)
+                    if (getClientAgentsSize() < 2)
                     {
                         //Logger.getGlobal().log(Level.INFO, String.format("UpdateService: Less than two clients. %d connected clients of %d.", connectedClients, clientsAgents.size()));
                         try
@@ -72,34 +92,35 @@ public class RegisterAgent implements IRegisterAgent
                         continue;
                     }
 
-                    for (String address : clientsAgents)
+                    synchronized (clientsAgents)
                     {
-                        try
+                        for (String address : clientsAgents)
                         {
-                            Logger.getGlobal().log(Level.WARNING, String.format("UpdateService: Updating %s.", address));
-                            IClientAgent agent = (IClientAgent) registry.lookup(address);
-                            agent.update();
-                        }
-                        catch (RemoteException e)
-                        {
-                            Logger.getGlobal().log(Level.WARNING, String.format("UpdateService: Could not find %s.", address));
-                        }
-                        catch (NotBoundException e)
-                        {
-                            Logger.getGlobal().log(Level.WARNING, String.format("UpdateService: Not bound %s.", address));
                             try
                             {
-                                sleep(5000);
+                                Logger.getGlobal().log(Level.WARNING, String.format("UpdateService: Updating %s.", address));
+                                IClientAgent agent = (IClientAgent) registry.lookup(address);
+                                agent.update();
                             }
-                            catch (InterruptedException e1)
+                            catch (RemoteException e)
                             {
-                                Logger.getGlobal().log(Level.WARNING, "UpdateThread sleep interrupted.");
+                                Logger.getGlobal().log(Level.WARNING, String.format("UpdateService: Could not find %s.", address));
+                            }
+                            catch (NotBoundException e)
+                            {
+                                Logger.getGlobal().log(Level.WARNING, String.format("UpdateService: Not bound %s.", address));
+                                try
+                                {
+                                    sleep(5000);
+                                }
+                                catch (InterruptedException e1)
+                                {
+                                    Logger.getGlobal().log(Level.WARNING, "UpdateThread sleep interrupted.");
+                                }
                             }
                         }
+                        connectedClients = getClientAgentsSize();
                     }
-
-                    end = true;
-
                 }
             }
         }.start();
