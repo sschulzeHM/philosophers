@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 /**
  * Created by stefanschulze on 18.11.15.
  */
-public class Client extends HostApplication
+public class Client extends Thread
 {
     private static final int WAIT_TIME = 3000;
     private int ID;
@@ -27,17 +27,19 @@ public class Client extends HostApplication
         Logger.getGlobal().addHandler(consoleHandler);
         Logger.getGlobal().setLevel(Level.WARNING);
 
-        String myIP = getHostFromArgs(args, 2);
-        int myPort = getPortFromArgs(args, 3);
+        // parse arguments
+        HostArgumentsParser argsParser = new HostArgumentsParser();
+        String myIP = argsParser.getHostFromArgs(args, 2);
+        int myPort = argsParser.getPortFromArgs(args, 3);
 
-        String serverIP = getHostFromArgs(args, 0);
-        int serverPort = getPortFromArgs(args, 1);
+        String serverIP = argsParser.getHostFromArgs(args, 0);
+        int serverPort = argsParser.getPortFromArgs(args, 1);
         Logger.getGlobal().log(Level.WARNING, "Client running on " + myIP + ":" + myPort + ". Connecting to " + serverIP + ":" + serverPort);
-
         System.setProperty("java.rmi.server.hostname", serverIP);
+
+        // connect with server
         IConnectionAgent connectionAgent;
         String id;
-
         while (true)
         {
             try
@@ -69,6 +71,7 @@ public class Client extends HostApplication
             }
         }
 
+        // setup
         ISpecification spec;
         Table table;
         Philosopher philosophers[];

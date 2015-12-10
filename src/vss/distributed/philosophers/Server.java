@@ -19,9 +19,11 @@ import java.util.logging.Logger;
 /**
  * Created by stefanschulze on 18.11.15.
  */
-public class Server extends HostApplication {
+public class Server extends Thread
+{
 
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws RemoteException
+    {
         // configure Logger
         Logger.getGlobal().setUseParentHandlers(false);
         LogFormatter formatter = new LogFormatter();
@@ -30,12 +32,16 @@ public class Server extends HostApplication {
         Logger.getGlobal().addHandler(consoleHandler);
 
         // parse arguments
-        String ip = getHostFromArgs(args, 0);
-        int port = getPortFromArgs(args, 1);
+        HostArgumentsParser argsParser = new HostArgumentsParser();
+        String ip = argsParser.getHostFromArgs(args, 0);
+        int port = argsParser.getPortFromArgs(args, 1);
+        Logger.getGlobal().log(Level.WARNING, String.format("Server running on %s:%d.", ip, port));
+        System.setProperty("java.rmi.server.hostname", ip);
+
+        // create RMI registry
         LocateRegistry.createRegistry(port);
         Registry registry = LocateRegistry.getRegistry();
 
-        System.setProperty("java.rmi.server.hostname", ip);
 
         // create remote objects
         IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
@@ -68,7 +74,8 @@ public class Server extends HostApplication {
         boolean before;
         String clientID;
         // accept input for insertion at clients
-        while (!interrupted()) {
+        while (!interrupted())
+        {
             try
             {
                 numOfClients = ((ConnectionAgent) connectionAgent).getNumOfClients();
