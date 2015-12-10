@@ -31,7 +31,7 @@ public class InsertWaitThread extends Thread
         {
             Logger.getGlobal().log(Level.INFO, client + " not available.");
         }
-        catch (NotBoundException e) 
+        catch (NotBoundException e)
         {
             Logger.getGlobal().log(Level.INFO, client + " not bound.");
         }
@@ -41,15 +41,15 @@ public class InsertWaitThread extends Thread
                 Logger.getGlobal().log(Level.INFO, "Start update at " + client + ".");
                 clientAgent.update();
                 break;
-            } 
-            catch (RemoteException e) 
+            }
+            catch (RemoteException e)
             {
                 Logger.getGlobal().log(Level.WARNING, client + " not available for update.");
-                try 
+                try
                 {
                     sleep(5000);
-                } 
-                catch (InterruptedException i) 
+                }
+                catch (InterruptedException i)
                 {
                     Logger.getGlobal().log(Level.WARNING, "WaitForInsertThread sleep interrupted.");
                 }

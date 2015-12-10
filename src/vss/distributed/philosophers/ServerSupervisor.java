@@ -100,7 +100,7 @@ public class ServerSupervisor implements IRegisterAgent
                             {
                                 supervisor = (ILocalSuperVisor) registry.lookup(supID);
                                 supervisor.setGlobalMin(globalMin);
-                                Logger.getGlobal().log(Level.WARNING, String.format("Set global min %d at %s.", globalMin, supID));
+                                Logger.getGlobal().log(Level.INFO, String.format("Set global min %d at %s.", globalMin, supID));
                             }
                             catch (RemoteException e)
                             {

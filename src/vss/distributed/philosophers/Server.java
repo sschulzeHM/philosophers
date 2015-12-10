@@ -90,7 +90,8 @@ public class Server extends Thread
                         inputSeatCount = scanner.nextInt();
                     }
 
-                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients - 1)));
+                    numOfClients = ((ConnectionAgent) connectionAgent).getNumOfClients();
+                    System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", numOfClients - 1));
                     inputClientNumber = scanner.nextInt();
                     while (inputClientNumber >= numOfClients || inputClientNumber < 0)
                     {
@@ -142,9 +143,9 @@ public class Server extends Thread
                     for (String client : clients)
                     {
                         clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
-                        if (clientID != null) 
+                        if (clientID != null)
                         {
-                            try 
+                            try
                             {
                                 clientAgent = (IClientAgent) registry.lookup(client);
                             }
@@ -153,7 +154,7 @@ public class Server extends Thread
                                 remoteLogger.logError(client + " was not found in registry!");
                                 break;
                             }
-                            if (client.contains(clientID)) 
+                            if (client.contains(clientID))
                             {
                                 try
                                 {
