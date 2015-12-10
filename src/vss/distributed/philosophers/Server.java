@@ -73,12 +73,14 @@ public class Server extends Thread
         boolean before;
         String clientID;
         // accept input for insertion at clients
-        while (!interrupted()) {
+        while (!interrupted())
+        {
             try
             {
                 numOfClients = ((ConnectionAgent) connectionAgent).getNumOfClients();
 
-                if (numOfClients >= 1) {
+                if (numOfClients >= 1)
+                {
                     System.out.println("Wie viele Seats sollen eingfuegt werden? Anzahl eingeben:  ");
                     inputSeatCount = scanner.nextInt();
                     while (inputSeatCount <= 0)
@@ -153,13 +155,13 @@ public class Server extends Thread
                             }
                             if (client.contains(clientID)) 
                             {
-                                try 
+                                try
                                 {
                                     Logger.getGlobal().log(Level.INFO, "Start insert at " + client + ".");
                                     clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
 
-                                } 
-                                catch (ConnectException e) 
+                                }
+                                catch (ConnectException e)
                                 {
                                     remoteLogger.logError(client + " is not available!");
                                     break;

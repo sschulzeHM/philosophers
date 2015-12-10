@@ -35,7 +35,7 @@ public class Client extends Thread
         String serverIP = argsParser.getHostFromArgs(args, 0);
         int serverPort = argsParser.getPortFromArgs(args, 1);
         Logger.getGlobal().log(Level.WARNING, "Client running on " + myIP + ":" + myPort + ". Connecting to " + serverIP + ":" + serverPort);
-        System.setProperty("java.rmi.server.hostname", serverIP);
+        System.setProperty("java.rmi.server.hostname", myIP);
 
         // connect with server
         IConnectionAgent connectionAgent;
@@ -44,7 +44,7 @@ public class Client extends Thread
         {
             try
             {
-               // Logger.getGlobal().log(Level.WARNING,"Before Lookup ConnectionAgent");
+                // Logger.getGlobal().log(Level.WARNING,"Before Lookup ConnectionAgent");
                 connectionAgent = (IConnectionAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ConnectionAgent");
                 id = connectionAgent.connect(myIP, myPort);
                 break;
@@ -107,19 +107,19 @@ public class Client extends Thread
                 // create and register own agent
                 clientAgent = new ClientAgent(table, connectionAgent, id);
                 Remote stubAgent = UnicastRemoteObject.exportObject(clientAgent, 0);
-               // Logger.getGlobal().log(Level.WARNING,"Before Lookup RegisterAgent");
+                // Logger.getGlobal().log(Level.WARNING,"Before Lookup RegisterAgent");
                 registerAgent = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/RegisterAgent");
-               // Logger.getGlobal().log(Level.WARNING,"Before Lookup RegisterAgent");
+                // Logger.getGlobal().log(Level.WARNING,"Before Lookup RegisterAgent");
                 registerAgent.register(stubAgent, String.format("ClientAgent%s", id));
-               // Logger.getGlobal().log(Level.WARNING,"After register at RegisterAgent");
+                // Logger.getGlobal().log(Level.WARNING,"After register at RegisterAgent");
 
                 // register supervisor at ServerSupervisor
                 Remote stubSupervisor = UnicastRemoteObject.exportObject(supervisor, 0);
-               // Logger.getGlobal().log(Level.WARNING,"Before Lookup ServerSupervisor");
+                // Logger.getGlobal().log(Level.WARNING,"Before Lookup ServerSupervisor");
                 serverSupervisor = (IRegisterAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ServerSupervisor");
-               // Logger.getGlobal().log(Level.WARNING,"After Lookup ServerSupervisor");
+                // Logger.getGlobal().log(Level.WARNING,"After Lookup ServerSupervisor");
                 serverSupervisor.register(stubSupervisor, String.format("Supervisor%s", id));
-               // Logger.getGlobal().log(Level.WARNING,"After register at ServerSupervisor");
+                // Logger.getGlobal().log(Level.WARNING,"After register at ServerSupervisor");
 
                 // start philosophers
                 for (Philosopher phil : philosophers)

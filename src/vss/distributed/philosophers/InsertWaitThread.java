@@ -12,25 +12,29 @@ import java.util.logging.Logger;
 public class InsertWaitThread extends Thread
 {
 
-  //  private final IClientAgent clientAgent;
+    //  private final IClientAgent clientAgent;
     private final Registry registry;
     private final String client;
 
-    public InsertWaitThread(Registry registry, String client) {
-      //  this.clientAgent = clientAgent;
+    public InsertWaitThread(Registry registry, String client)
+    {
+        //  this.clientAgent = clientAgent;
         this.registry = registry;
         this.client = client;
     }
-    
+
     public void run()
     {
         boolean done = false;
         IClientAgent clientAgent = null;
-        try {
+        try
+        {
             clientAgent = (IClientAgent) registry.lookup(client);
-        } catch (RemoteException e) {
+        }
+        catch (RemoteException e)
+        {
             Logger.getGlobal().log(Level.INFO, client + " not available.");
-        } 
+        }
         catch (NotBoundException e) 
         {
             Logger.getGlobal().log(Level.INFO, client + " not bound.");

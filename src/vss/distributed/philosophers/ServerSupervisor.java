@@ -82,6 +82,7 @@ public class ServerSupervisor implements IRegisterAgent
                             catch (RemoteException e)
                             {
                                 Logger.getGlobal().log(Level.WARNING, String.format("ServerSupervisor: %s could not be found.", supID));
+                                globalMin = Integer.MAX_VALUE;
                             }
                             catch (NotBoundException e)
                             {
@@ -99,6 +100,7 @@ public class ServerSupervisor implements IRegisterAgent
                             {
                                 supervisor = (ILocalSuperVisor) registry.lookup(supID);
                                 supervisor.setGlobalMin(globalMin);
+                                Logger.getGlobal().log(Level.WARNING, String.format("Set global min %d at %s.", globalMin, supID));
                             }
                             catch (RemoteException e)
                             {
