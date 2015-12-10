@@ -36,7 +36,7 @@ public class ClientAgent implements IClientAgent, IRegisterObject
 
         table.getFirstSeat().setLeftNeighbor(remote);
         Logger.getGlobal().log(Level.WARNING, String.format("Client %s setting remote seat %d", clientID, remote.getId()));
-        table.continueRunning();
+        table.continueRunning(table.getLastSeat());
         agent = new LocalSeatAgent(table, remote);
         agent.start();
 
@@ -71,7 +71,7 @@ public class ClientAgent implements IClientAgent, IRegisterObject
         }
         catch (ExportException e)
         {
-            Logger.getGlobal().log(Level.WARNING, "Seat reference already created");
+            Logger.getGlobal().log(Level.INFO, "Seat reference already created");
         }
         neighborAgent.setRemoteSeat((IRemoteSeat) stubSeat);
     }

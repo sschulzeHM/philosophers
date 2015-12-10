@@ -1,5 +1,6 @@
 package vss.distributed.philosophers;
 
+import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -113,6 +114,7 @@ public class Table
         }
 
         boolean allSeatFree;
+
         do
         {
             allSeatFree = true;
@@ -121,10 +123,26 @@ public class Table
                 allSeatFree &= seat.isAvailable();
             }
         } while (!allSeatFree);
+
+        boolean forkLastSeatFree = false;
+
+        while(!forkLastSeatFree){
+            try {
+                forkLastSeatFree = getLastSeat().takeRightFork();
+            } catch (RemoteException e) {
+                Logger.getGlobal().log(Level.WARNING, "Can't happen, because local last Seat.");
+            }
+        }
     }
 
-    public void continueRunning()
+    public void continueRunning(IRemoteSeat seat)
     {
+        try {
+            seat.releaseRightFork();
+        } catch (RemoteException e) {
+            Logger.getGlobal().log(Level.WARNING, "Can't happen, because local last Seat.");
+        }
+
         for (Usher usher : ushers)
         {
             usher.continueRunning();
@@ -134,7 +152,7 @@ public class Table
     public void insertSeats(boolean before, int countSeats, int seatID)
     {
         stop();
-
+        IRemoteSeat oldLastSeat = getLastSeat();
         Logger.getGlobal().log(Level.INFO, "Everything was stopped and all Seats are free");
 
         Seat[] moreSeats = new Seat[seats.length + countSeats];
@@ -172,7 +190,7 @@ public class Table
 
         assignSeats(seats.length);
 
-        continueRunning();
+        continueRunning(oldLastSeat);
 
         Logger.getGlobal().log(Level.INFO, "Evering is running again");
     }

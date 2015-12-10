@@ -43,7 +43,7 @@ public class LocalSeatAgent extends Thread
                 }
 
                 table.getFirstSeat().setLeftNeighbor(table.getLastSeat());
-                table.continueRunning();
+                table.continueRunning(table.getLastSeat());
                 break;
             }
             try

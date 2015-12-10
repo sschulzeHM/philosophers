@@ -34,7 +34,9 @@ public class Client extends HostApplication
         int serverPort = getPortFromArgs(args, 1);
         Logger.getGlobal().log(Level.WARNING, "Client running on " + myIP + ":" + myPort + ". Connecting to " + serverIP + ":" + serverPort);
 
-        System.setProperty("java.rmi.server.hostname", serverIP);
+        //IMPORTANT:
+        System.setProperty("java.rmi.server.hostname", myIP);
+
         IConnectionAgent connectionAgent;
         String id;
 
@@ -42,7 +44,7 @@ public class Client extends HostApplication
         {
             try
             {
-               // Logger.getGlobal().log(Level.WARNING,"Before Lookup ConnectionAgent");
+                //Logger.getGlobal().log(Level.WARNING,"Before Lookup ConnectionAgent");
                 connectionAgent = (IConnectionAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ConnectionAgent");
                 id = connectionAgent.connect(myIP, myPort);
                 break;
