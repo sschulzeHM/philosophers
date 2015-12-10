@@ -35,11 +35,11 @@ public class LocalSeatAgent extends Thread
                 try
                 {
                     table.getLastSeat().releaseRightFork();
-                    Logger.getGlobal().log(Level.INFO, "Reconnecting local seat " + table.getFirstSeat().getId() + " and seat " + table.getLastSeat().getId());
+                    Logger.getGlobal().log(Level.WARNING, "Reconnecting local seat " + table.getFirstSeat().getId() + " and seat " + table.getLastSeat().getId());
                 }
                 catch (RemoteException e1)
                 {
-                    Logger.getGlobal().log(Level.INFO, "Remote exception during reconnection.");
+                    Logger.getGlobal().log(Level.WARNING, "Remote exception during reconnection.");
                 }
 
                 table.getFirstSeat().setLeftNeighbor(table.getLastSeat());

@@ -1,6 +1,7 @@
 package vss.distributed.philosophers;
 
 import java.rmi.RemoteException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,13 +11,13 @@ public class Supervisor extends Thread implements ILocalSuperVisor
     private static final long SLEEP_TIME = 3000;
     private final int MAX_MEALS;
     private Philosopher philosophers[];
-    private int globalMin;
+    private AtomicInteger globalMin;
 
     public Supervisor(Philosopher[] philosophers, int maxMeals)
     {
         this.philosophers = philosophers;
         MAX_MEALS = maxMeals;
-        globalMin = Integer.MAX_VALUE;
+        globalMin = new AtomicInteger(Integer.MAX_VALUE);
     }
 
     public void run()
@@ -36,10 +37,10 @@ public class Supervisor extends Thread implements ILocalSuperVisor
                 }
             }
 
-            if (globalMin < min)
+            if (globalMin.get() < min)
             {
-                Logger.getGlobal().log(Level.WARNING, String.format("Local min %d exceeds global min %d! ", min, globalMin));
-                min = globalMin;
+                Logger.getGlobal().log(Level.WARNING, String.format("Local min %d exceeds global min %d! ", min, globalMin.get()));
+                min = globalMin.get();
             }
 
             // set canEat on all philosophers
@@ -74,7 +75,7 @@ public class Supervisor extends Thread implements ILocalSuperVisor
     public void setGlobalMin(int min) throws RemoteException
     {
         //Logger.getGlobal().log(Level.INFO, String.format("New global min from ServerSupervisor: %d.", min));
-        this.globalMin = min;
+        this.globalMin.set(min);
     }
 
     @Override
