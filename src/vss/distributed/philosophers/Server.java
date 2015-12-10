@@ -42,7 +42,6 @@ public class Server extends Thread
         LocateRegistry.createRegistry(port);
         Registry registry = LocateRegistry.getRegistry();
 
-
         // create remote objects
         IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
         Remote stubLogger = UnicastRemoteObject.exportObject(remoteLogger, port);
@@ -74,14 +73,12 @@ public class Server extends Thread
         boolean before;
         String clientID;
         // accept input for insertion at clients
-        while (!interrupted())
-        {
+        while (!interrupted()) {
             try
             {
                 numOfClients = ((ConnectionAgent) connectionAgent).getNumOfClients();
 
-                if (numOfClients >= 1)
-                {
+                if (numOfClients >= 1) {
                     System.out.println("Wie viele Seats sollen eingfuegt werden? Anzahl eingeben:  ");
                     inputSeatCount = scanner.nextInt();
                     while (inputSeatCount <= 0)
@@ -143,9 +140,9 @@ public class Server extends Thread
                     for (String client : clients)
                     {
                         clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
-                        if (clientID != null && client.contains(clientID))
+                        if (clientID != null) 
                         {
-                            try
+                            try 
                             {
                                 clientAgent = (IClientAgent) registry.lookup(client);
                             }
@@ -154,16 +151,21 @@ public class Server extends Thread
                                 remoteLogger.logError(client + " was not found in registry!");
                                 break;
                             }
-                            try
+                            if (client.contains(clientID)) 
                             {
-                                clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
-                                new InsertWaitThread(clientAgent, client).start();
+                                try 
+                                {
+                                    Logger.getGlobal().log(Level.INFO, "Start insert at " + client + ".");
+                                    clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
+
+                                } 
+                                catch (ConnectException e) 
+                                {
+                                    remoteLogger.logError(client + " is not available!");
+                                    break;
+                                }
                             }
-                            catch (ConnectException e)
-                            {
-                                remoteLogger.logError(client + " is not available!");
-                                break;
-                            }
+                            new InsertWaitThread(registry, client).start();
                         }
                     }
                 }

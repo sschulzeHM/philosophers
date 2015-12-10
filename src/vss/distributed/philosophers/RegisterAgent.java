@@ -114,8 +114,7 @@ public class RegisterAgent implements IRegisterAgent
                                     sleep(5000);
                                 }
                                 catch (InterruptedException e1)
-                                {
-                                    Logger.getGlobal().log(Level.WARNING, "UpdateThread sleep interrupted.");
+                                {Logger.getGlobal().log(Level.WARNING, "UpdateThread sleep interrupted.");
                                 }
                             }
                         }
