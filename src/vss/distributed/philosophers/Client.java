@@ -34,7 +34,7 @@ public class Client extends HostApplication
         int serverPort = getPortFromArgs(args, 1);
         Logger.getGlobal().log(Level.WARNING, "Client running on " + myIP + ":" + myPort + ". Connecting to " + serverIP + ":" + serverPort);
 
-        System.setProperty("java.rmi.server.hostname",serverIP);
+        System.setProperty("java.rmi.server.hostname", serverIP);
         IConnectionAgent connectionAgent;
         String id;
 

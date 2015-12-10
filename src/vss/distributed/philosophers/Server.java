@@ -123,7 +123,6 @@ public class Server extends HostApplication {
                     clients = ((RegisterAgent) registerAgent).getClientAgents();
 
                     for (String client : clients) {
-
                         clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
                         if (clientID != null) {
                             try {

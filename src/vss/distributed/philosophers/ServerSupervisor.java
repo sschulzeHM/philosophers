@@ -26,15 +26,19 @@ public class ServerSupervisor implements IRegisterAgent
         this.ip = ip;
         this.port = port;
         this.supervisors = new ArrayList<>();
-       //startSupervising();
+        //startSupervising();
     }
 
     @Override
     public void register(Remote registerObj, String name) throws RemoteException
     {
-        Logger.getGlobal().log(Level.INFO, String.format("Register Supervisor: %s.", name));
-        addSupervisor(name);
-        registry.rebind(name, registerObj);
+        // blocking startSupervising thread during register
+        synchronized (supervisors)
+        {
+            Logger.getGlobal().log(Level.INFO, String.format("Register Supervisor: %s.", name));
+            addSupervisor(name);
+            registry.rebind(name, registerObj);
+        }
     }
 
     public void addSupervisor(String name)

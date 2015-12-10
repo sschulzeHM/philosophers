@@ -5,6 +5,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -17,6 +18,7 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     private Table table;
     private LocalSeatAgent agent;
     private AtomicBoolean insertDone;
+    private Remote stubSeat;
 
     public ClientAgent(Table table, IConnectionAgent connectionAgent, String clientID)
     {
@@ -63,7 +65,14 @@ public class ClientAgent implements IClientAgent, IRegisterObject
 
         // local to global
         // set remote seat
-        Remote stubSeat = UnicastRemoteObject.exportObject(table.getLastSeat(), 0);
+        try
+        {
+            stubSeat = UnicastRemoteObject.exportObject(table.getLastSeat(), 0);
+        }
+        catch (ExportException e)
+        {
+            Logger.getGlobal().log(Level.WARNING, "Seat reference already created");
+        }
         neighborAgent.setRemoteSeat((IRemoteSeat) stubSeat);
     }
 
@@ -71,9 +80,9 @@ public class ClientAgent implements IClientAgent, IRegisterObject
     public void insertSeats(boolean before, int countSeats, int seatID) throws RemoteException
     {
 
-            insertDone.set(false);
-            table.insertSeats(before, countSeats, seatID);
-            insertDone.set(true);
+        insertDone.set(false);
+        table.insertSeats(before, countSeats, seatID);
+        insertDone.set(true);
 
     }
 

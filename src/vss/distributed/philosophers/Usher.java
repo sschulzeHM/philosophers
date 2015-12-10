@@ -16,7 +16,8 @@ public class Usher {
     private Seat nullSeat;
     private boolean running;
 
-    public Usher(int id) {
+    public Usher(int id)
+    {
         this.id = id;
         this.running = true;
     }
@@ -71,7 +72,8 @@ public class Usher {
         notifyAll();
     }
 
-    public void setSeats(Seat[] seats) {
+    public void setSeats(Seat[] seats)
+    {
         this.seats = seats;
     }
 }
