@@ -42,13 +42,19 @@ public class InsertWaitThread extends Thread
                 Logger.getGlobal().log(Level.WARNING, "WaitForInsertThread sleep interrupted.");
             }
         }
-        try
-        {
-            clientAgent.update();
-        }
-        catch (RemoteException e)
-        {
-            Logger.getGlobal().log(Level.WARNING, client + "not available for update.");
+
+        while(true) {
+            try {
+                clientAgent.update();
+                break;
+            } catch (RemoteException e) {
+                Logger.getGlobal().log(Level.WARNING, client + " not available for update.");
+                try {
+                    sleep(5000);
+                } catch (InterruptedException i) {
+                    Logger.getGlobal().log(Level.WARNING, "WaitForInsertThread sleep interrupted.");
+                }
+            }
         }
     }
 }
