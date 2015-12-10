@@ -72,7 +72,7 @@ public class Server extends HostApplication {
             try {
                 numOfClients = ((ConnectionAgent) connectionAgent).getNumOfClients();
 
-                if (numOfClients >= 1) {
+                if (numOfClients >= 2) {
                     System.out.println("Wie viele Seats sollen eingfuegt werden? Anzahl eingeben:  ");
                     inputSeatCount = scanner.nextInt();
                     while (inputSeatCount <= 0) {
@@ -123,21 +123,26 @@ public class Server extends HostApplication {
                     clients = ((RegisterAgent) registerAgent).getClientAgents();
 
                     for (String client : clients) {
+
                         clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
-                        if (clientID != null && client.contains(clientID)) {
+                        if (clientID != null) {
                             try {
                                 clientAgent = (IClientAgent) registry.lookup(client);
                             } catch (NotBoundException e) {
                                 remoteLogger.logError(client + " was not found in registry!");
                                 break;
                             }
-                            try {
-                                clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
-                                new InsertWaitThread(clientAgent, client).start();
-                            } catch (ConnectException e) {
-                                remoteLogger.logError(client + " is not available!");
-                                break;
+                            if (client.contains(clientID)) {
+                                try {
+                                    Logger.getGlobal().log(Level.INFO, "Start insert at " + client + ".");
+                                    clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
+
+                                } catch (ConnectException e) {
+                                    remoteLogger.logError(client + " is not available!");
+                                    break;
+                                }
                             }
+                            new InsertWaitThread(registry, client).start();
                         }
                     }
                 }

@@ -42,7 +42,7 @@ public class Client extends HostApplication
         {
             try
             {
-                Logger.getGlobal().log(Level.WARNING,"Before Lookup ConnectionAgent");
+               // Logger.getGlobal().log(Level.WARNING,"Before Lookup ConnectionAgent");
                 connectionAgent = (IConnectionAgent) Naming.lookup("//" + serverIP + ":" + serverPort + "/ConnectionAgent");
                 id = connectionAgent.connect(myIP, myPort);
                 break;
