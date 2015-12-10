@@ -19,9 +19,11 @@ import java.util.logging.Logger;
 /**
  * Created by stefanschulze on 18.11.15.
  */
-public class Server extends HostApplication {
+public class Server extends Thread
+{
 
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws RemoteException
+    {
         // configure Logger
         Logger.getGlobal().setUseParentHandlers(false);
         LogFormatter formatter = new LogFormatter();
@@ -30,12 +32,15 @@ public class Server extends HostApplication {
         Logger.getGlobal().addHandler(consoleHandler);
 
         // parse arguments
-        String ip = getHostFromArgs(args, 0);
-        int port = getPortFromArgs(args, 1);
+        HostArgumentsParser argsParser = new HostArgumentsParser();
+        String ip = argsParser.getHostFromArgs(args, 0);
+        int port = argsParser.getPortFromArgs(args, 1);
+        Logger.getGlobal().log(Level.WARNING, String.format("Server running on %s:%d.", ip, port));
+        System.setProperty("java.rmi.server.hostname", ip);
+
+        // create RMI registry
         LocateRegistry.createRegistry(port);
         Registry registry = LocateRegistry.getRegistry();
-
-        System.setProperty("java.rmi.server.hostname", ip);
 
         // create remote objects
         IRemoteLogger remoteLogger = new RemoteLogger(Logger.getGlobal());
@@ -68,14 +73,18 @@ public class Server extends HostApplication {
         boolean before;
         String clientID;
         // accept input for insertion at clients
-        while (!interrupted()) {
-            try {
+        while (!interrupted())
+        {
+            try
+            {
                 numOfClients = ((ConnectionAgent) connectionAgent).getNumOfClients();
 
-                if (numOfClients >= 2) {
+                if (numOfClients >= 1)
+                {
                     System.out.println("Wie viele Seats sollen eingfuegt werden? Anzahl eingeben:  ");
                     inputSeatCount = scanner.nextInt();
-                    while (inputSeatCount <= 0) {
+                    while (inputSeatCount <= 0)
+                    {
                         Logger.getGlobal().log(Level.WARNING, "Die Anzahl der Seats muss groesser 0 sein.");
                         System.out.println("Anzahl erneut eingeben:  ");
                         inputSeatCount = scanner.nextInt();
@@ -83,7 +92,8 @@ public class Server extends HostApplication {
 
                     System.out.println(String.format("Auf welchem Client soll eingefügt werden? ClientID eingeben (Range: 0 - %d): ", (numOfClients - 1)));
                     inputClientNumber = scanner.nextInt();
-                    while (inputClientNumber >= numOfClients || inputClientNumber < 0) {
+                    while (inputClientNumber >= numOfClients || inputClientNumber < 0)
+                    {
                         Logger.getGlobal().log(Level.WARNING, "Eine ungueltige ClientID wurde eingegeben.");
                         System.out.println(String.format("ClientID erneut eingeben (Range: 0 - %d): ", (numOfClients - 1)));
                         inputClientNumber = scanner.nextInt();
@@ -92,29 +102,36 @@ public class Server extends HostApplication {
                     System.out.println("Soll vor oder nach einem Seat eingefuegt werden? Eingabe (v = davor, h = dahinter): ");
                     String c = scanner.next();
                     boolean correctEntry = false;
-                    if (c.equalsIgnoreCase("v") || c.equalsIgnoreCase("h")) {
+                    if (c.equalsIgnoreCase("v") || c.equalsIgnoreCase("h"))
+                    {
                         correctEntry = true;
                     }
-                    while (!correctEntry) {
+                    while (!correctEntry)
+                    {
                         Logger.getGlobal().log(Level.WARNING, "Eine ungueltiges Zeichen wurde eingegeben.");
                         System.out.println("Zeichen erneut eingeben (v = davor, h = dahinter): ");
                         c = scanner.next();
-                        if (c.equalsIgnoreCase("v") || c.equalsIgnoreCase("h")) {
+                        if (c.equalsIgnoreCase("v") || c.equalsIgnoreCase("h"))
+                        {
                             correctEntry = true;
                         }
                     }
 
-                    if (c.equalsIgnoreCase("v")) {
+                    if (c.equalsIgnoreCase("v"))
+                    {
                         System.out.println("SeatID eingeben vor der eingefuegt werden soll. Eingabe: ");
                         before = true;
-                    } else {
+                    }
+                    else
+                    {
                         System.out.println("SeatID eingeben nach der eingefuegt werden soll. Eingabe: ");
                         before = false;
                     }
 
                     inputSeatID = scanner.nextInt();
 
-                    while (inputSeatID < 0) {
+                    while (inputSeatID < 0)
+                    {
                         Logger.getGlobal().log(Level.WARNING, "Die SeatID muss groesser oder gleich 0 sein.");
                         System.out.println("SeatID erneut eingeben: ");
                         inputSeatID = scanner.nextInt();
@@ -122,21 +139,30 @@ public class Server extends HostApplication {
 
                     clients = ((RegisterAgent) registerAgent).getClientAgents();
 
-                    for (String client : clients) {
+                    for (String client : clients)
+                    {
                         clientID = ((ConnectionAgent) connectionAgent).getClient(inputClientNumber);
-                        if (clientID != null) {
-                            try {
+                        if (clientID != null) 
+                        {
+                            try 
+                            {
                                 clientAgent = (IClientAgent) registry.lookup(client);
-                            } catch (NotBoundException e) {
+                            }
+                            catch (NotBoundException e)
+                            {
                                 remoteLogger.logError(client + " was not found in registry!");
                                 break;
                             }
-                            if (client.contains(clientID)) {
-                                try {
+                            if (client.contains(clientID)) 
+                            {
+                                try
+                                {
                                     Logger.getGlobal().log(Level.INFO, "Start insert at " + client + ".");
                                     clientAgent.insertSeats(before, inputSeatCount, inputSeatID);
 
-                                } catch (ConnectException e) {
+                                }
+                                catch (ConnectException e)
+                                {
                                     remoteLogger.logError(client + " is not available!");
                                     break;
                                 }
@@ -145,7 +171,9 @@ public class Server extends HostApplication {
                         }
                     }
                 }
-            } catch (NoSuchElementException e) {
+            }
+            catch (NoSuchElementException e)
+            {
                 break;
             }
 

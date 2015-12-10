@@ -5,7 +5,7 @@ import java.rmi.registry.Registry;
 /**
  * Created by stefanschulze on 29.11.15.
  */
-public class HostApplication extends Thread
+public class HostArgumentsParser
 {
     public static int getPortFromArgs(String[] args, int index)
     {
